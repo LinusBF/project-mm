@@ -1,4 +1,16 @@
 This is Minus testing
+This is a commit from my (Linus) branch
+
+
+
+
+
+
+
+
+
+Hello from Erik
+
 
 
 
@@ -11,18 +23,7 @@ This is Minus testing
 
 ...
 
-
-
-
-
-
-
-
-
-
-
-...
-
+melker skriver sitt test här
 
 
 
