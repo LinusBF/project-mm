@@ -11,7 +11,7 @@ Module.register("pg8-faceDetect",{
 
 	// Default module config.
 	defaults: {
-		refreshRate: 1,
+		refreshRate: 1000,
 	},
 
 	faceInFrame: false,
@@ -23,16 +23,17 @@ Module.register("pg8-faceDetect",{
 	},
 
 	detectFace: function() {
-		console.log("Testing for face in frame...");
-		const spawn = require("child_process").spawn;
-		const pythonScript = spawn("python", ['face_detect.py']);
-
-		pythonScript.stdout.on('data', (data) => {
-			console.log("Result from face detection");
-			console.log(data);
-			this.faceInFrame = (data === "True");
-		});
-		this.updateDom();
+		var that = this;
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+	            if (this.readyState == 4 && this.status == 200) {
+		        var response = JSON.parse(this.responseText);
+			that.faceInFrame = (response.data === true);
+		        that.updateDom();
+		    }
+		};
+		xhttp.open("GET", "http://localhost:5000/detect-face", true);
+    		xhttp.send();
 	},
 
 	// Override dom generator.
