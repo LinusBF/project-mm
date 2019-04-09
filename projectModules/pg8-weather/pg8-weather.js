@@ -3,7 +3,7 @@
 /* Magic Mirror
  * Module: PG8Weather
  *
- * By Michael Teeuw http://michaelteeuw.nl
+ * By ProjektGrupp8
  * MIT Licensed.
  */
 
