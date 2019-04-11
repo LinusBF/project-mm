@@ -37,7 +37,8 @@ Module.register("pg8-apiStatus", {
     start: function () {
         console.log("Starting module: " + this.name);
         for (let e in this.config.endpoints) {
-            this.changeEndpointStatus(e, this.status.UNKNOWN);
+            const endpoint = this.config.endpoints[e];
+            this.changeEndpointStatus(endpoint, this.status.UNKNOWN);
         }
         this.updateDom();
         this.scheduleStatusPing();
@@ -63,14 +64,15 @@ Module.register("pg8-apiStatus", {
     pingEnpoints: function () {
         const that = this;
         for(let e in this.config.endpoints){
-            this.pingEndpoint(e, function(response){
-                that.testEndpoint(e, response);
+            const endpoint = this.config.endpoints[e];
+            this.pingEndpoint(endpoint, function(response){
+                that.testEndpoint(endpoint, response);
             });
         }
     },
 
     testEndpoint: function(endpoint, response) {
-        if (endpoint.expected === response){
+        if (endpoint.expected == response){
             this.changeEndpointStatus(endpoint, this.status.UP);
         } else {
             this.changeEndpointStatus(endpoint, this.status.DOWN);
@@ -87,7 +89,8 @@ Module.register("pg8-apiStatus", {
         const wrapper = document.createElement("div");
         wrapper.className = "endpoints-wrapper";
 
-        for(let endpoint in this.config.endpoints){
+        for(let e in this.config.endpoints){
+            const endpoint = this.config.endpoints[e];
             wrapper.appendChild(this.getEndpointDom(endpoint));
         }
 
