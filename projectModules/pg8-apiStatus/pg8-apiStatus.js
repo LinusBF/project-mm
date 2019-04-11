@@ -13,6 +13,7 @@ Module.register("pg8-apiStatus", {
     defaults: {
         refreshRate: 5000,
         endpoints: [
+            /* ON FORMAT
             {
                 id: null,
                 name: null,
@@ -20,6 +21,7 @@ Module.register("pg8-apiStatus", {
                 apiKey: null,
                 expected: null,
             }
+            */
         ],
     },
 
