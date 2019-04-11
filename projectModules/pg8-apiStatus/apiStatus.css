@@ -11,6 +11,6 @@
     align-content: center;
 }
 
-.endpoint-container p{
-    font-size: 12pt;
+.endpoint-container p, .endpoint-container i{
+    font-size: 10pt;
 }

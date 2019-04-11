@@ -72,7 +72,7 @@ Module.register("pg8-apiStatus", {
     },
 
     testEndpoint: function(endpoint, response) {
-        if (endpoint.expected == response){
+        if (endpoint.expected.toString() === response.toString()){
             this.changeEndpointStatus(endpoint, this.status.UP);
         } else {
             this.changeEndpointStatus(endpoint, this.status.DOWN);
