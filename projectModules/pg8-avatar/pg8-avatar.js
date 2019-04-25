@@ -14,6 +14,8 @@ Module.register("pg8-avatar", {
         blinkInterval: 7000,
     },
 
+    faceInFrame: false,
+
     // Define start sequence.
     start: function () {
         console.log("Starting module: " + this.name);
@@ -22,13 +24,13 @@ Module.register("pg8-avatar", {
 
     blink: function () {
         Array.from(document.getElementsByClassName("topcircle")).forEach(
-            function(element, index, array) {
+            function(element) {
                 element.classList.add('eye-close');
             }
         );
         setTimeout(function() {
             Array.from(document.getElementsByClassName("topcircle")).forEach(
-                function(element, index, array) {
+                function(element) {
                     element.classList.remove('eye-close');
                 }
             );
@@ -42,13 +44,13 @@ Module.register("pg8-avatar", {
 
         wrapper.innerHTML = `
             <div class="eye1">
-                <div class="bottomcircle">
+                <div class="bottomcircle-closed">
                     <div class="iris"></div>
                 </div>
                <div class="topcircle"></div>
             </div>
             <div class="eye2">
-                <div class="bottomcircle">
+                <div class="bottomcircle-closed">
                     <div class="iris"></div>
                 </div>
                <div class="topcircle"></div>
@@ -73,8 +75,19 @@ Module.register("pg8-avatar", {
 
         var self = this;
         setTimeout(function () {
-            self.blink();
+            if (faceInFrame) {self.blink();}
             self.scheduleRefresh();
         }, nextLoad);
+    },
+
+    notificationReceived: function(notification){
+        if (notification === 'FACE_DETECTED') {
+            faceInFrame = true;
+            Array.from(document.getElementsByClassName("topcircle")).forEach(
+                function(element) {
+                    element.classList.add('topcircle-open');
+                }
+            );
+        }
     },
 });
