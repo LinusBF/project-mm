@@ -1,3 +1,5 @@
+import sys
+from os import path
 import pyaudio
 import wave
 
@@ -29,10 +31,3 @@ print("* done recording")
 stream.stop_stream()
 stream.close()
 p.terminate()
-
-wf = wave.open(WAVE_OUTPUT_FILENAME, 'wb')
-wf.setnchannels(CHANNELS)
-wf.setsampwidth(p.get_sample_size(FORMAT))
-wf.setframerate(RATE)
-wf.writeframes(b''.join(frames))
-wf.close()
