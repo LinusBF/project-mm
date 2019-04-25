@@ -1,0 +1,12 @@
+{
+  "name": "talk-to-df",
+  "main": "dist/bundle.js",
+  "scripts": {
+    "build": "webpack --config webpack.config.js",
+    "deploy": "ibmcloud fn action update talk-to-df dist/bundle.js --kind nodejs:10"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "webpack": "^3.8.1"
+  }
+}
