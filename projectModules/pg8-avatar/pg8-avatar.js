@@ -23,18 +23,28 @@ Module.register("pg8-avatar", {
     },
 
     blink: function () {
+        if (!this.faceInFrame) return;
         Array.from(document.getElementsByClassName("topcircle")).forEach(
-            function(element) {
+            function (element) {
                 element.classList.add('eye-close');
             }
         );
-        setTimeout(function() {
+        setTimeout(function () {
             Array.from(document.getElementsByClassName("topcircle")).forEach(
-                function(element) {
+                function (element) {
                     element.classList.remove('eye-close');
                 }
             );
         }, 1000);
+    },
+
+    openEyes: function () {
+        Array.from(document.getElementsByClassName("topcircle")).forEach(
+            function (element) {
+                element.classList.add('topcircle-open');
+                element.classList.remove('topcircle-closed');
+            }
+        );
     },
 
     // Override dom generator.
@@ -43,25 +53,24 @@ Module.register("pg8-avatar", {
         wrapper.className = 'avatar';
 
         wrapper.innerHTML = `
-            <div class="eye1">
-                <div class="bottomcircle-closed">
-                    <div class="iris"></div>
-                </div>
-               <div class="topcircle"></div>
+        <div class="eye1">
+            <div class="bottomcircle">
+                <div class="iris"></div>
             </div>
-            <div class="eye2">
-                <div class="bottomcircle-closed">
-                    <div class="iris"></div>
-                </div>
-               <div class="topcircle"></div>
+           <div class="topcircle topcircle-closed"></div>
+        </div>
+        <div class="eye2">
+            <div class="bottomcircle">
+                <div class="iris"></div>
             </div>
-        `;
+           <div class="topcircle topcircle-closed"></div>
+        </div>`;
 
         return wrapper;
     },
 
     // Define required scripts.
-    getStyles: function() {
+    getStyles: function () {
         return ["avatar.css"];
     },
 
@@ -75,19 +84,18 @@ Module.register("pg8-avatar", {
 
         var self = this;
         setTimeout(function () {
-            if (faceInFrame) {self.blink();}
-            self.scheduleRefresh();
+            if (self.faceInFrame) {
+                self.blink();
+                self.scheduleRefresh();
+            }
         }, nextLoad);
     },
 
-    notificationReceived: function(notification){
+    notificationReceived: function (notification) {
         if (notification === 'FACE_DETECTED') {
-            faceInFrame = true;
-            Array.from(document.getElementsByClassName("topcircle")).forEach(
-                function(element) {
-                    element.classList.add('topcircle-open');
-                }
-            );
+            this.faceInFrame = true;
+            this.openEyes();
+            this.scheduleRefresh();
         }
     },
 });

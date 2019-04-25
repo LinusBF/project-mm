@@ -36,8 +36,6 @@ body {
     background: green;
     border-radius: 50%;
     display: flex;
-    justify-content: center;
-    align-items: center;
     position: relative;
 }
 
@@ -49,14 +47,18 @@ body {
     width: 200px;
     height: 200px;
     border-radius: 100% 5%;
-    transform: translateX(-8%) translateY(43%) rotate(45deg);
+    transform: translateX(-8%) translateY(0%) rotate(45deg);
     z-index: 2;
+}
+
+.topcircle-closed{
+    transform: translateX(-8%) translateY(50%) rotate(45deg);
 }
 
 .topcircle-open{
     animation: open 800ms ease;
+    transform: translateX(-8%) translateY(0%) rotate(45deg);
 }
-
 @keyframes open {
     0% {
         transform: translateX(-8%) translateY(43%) rotate(45deg);
@@ -68,7 +70,7 @@ body {
 }
 
 .eye-blink{
-    animation: blink 800ms ease
+    animation: blink 800ms ease;
 }
 
 @keyframes blink{
@@ -77,11 +79,26 @@ body {
 
     }
     50%{
-        transform: translateX(-8%) translateY(43%) rotate(45deg);
+        transform: translateX(-8%) translateY(50%) rotate(45deg);
         border-radius: 75% 0;
     }
     100%{
         transform: translateX(-8%) translateY(0) rotate(45deg)
+    }
+}
+
+.eye-close{
+    animation: close 800ms ease
+}
+
+@keyframes close{
+    0% {
+        transform: translateX(-8%) translateY(0) rotate(45deg)
+
+    }
+    100%{
+        transform: translateX(-8%) translateY(50%) rotate(45deg);
+        border-radius: 75% 0;
     }
 }
 
