@@ -1,0 +1,70 @@
+body {
+    background: black;
+    margin: 0;
+}
+
+.avatar {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+
+    max-width: 600px;
+    margin: auto;
+}
+
+.eye1,
+.eye2{
+    position: relative;
+    margin: 0 1rem;
+}
+
+.bottomcircle{
+    background: #fff;
+    width: 300px;
+    height: 140px;
+    border-radius: 50%;
+    transform: translateY(100%);
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.iris{
+    width: 110px;
+    height: 110px;
+    background: green;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.topcircle{
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: black;
+    width: 300px;
+    height: 140px;
+    border-radius: 50%;
+    z-index: 2;
+}
+.eye-close{
+    animation: close 800ms ease
+}
+
+@keyframes close{
+    0% {
+        transform: translateY(0)
+    }
+    50%{
+        transform: translateY(100%)
+    }
+    100%{
+        transform: translateY(0)
+    }
+}
+
+
+
