@@ -12,8 +12,10 @@ Module.register("pg8-faceDetect", {
     // Default module config.
     defaults: {
         refreshRate: 1000,
+        refreshesUntilMissing: 5,
     },
 
+    refreshesSinceLastFace: 0,
     faceInFrame: false,
 
     // Define start sequence.
@@ -28,8 +30,11 @@ Module.register("pg8-faceDetect", {
         xhttp.onreadystatechange = function () {
             if (this.readyState === 4 && this.status === 200) {
                 var response = JSON.parse(this.responseText);
-                that.faceInFrame = (response.data === true);
-                that.updateDom();
+                if(response.data === true){
+                    that.detectedFaceInFrame();
+                } else {
+                    that.detectedFaceMissing();
+                }
             }
         };
         xhttp.open("GET", "http://localhost:5000/detect-face", true);
@@ -38,23 +43,26 @@ Module.register("pg8-faceDetect", {
 
     // Override dom generator.
     getDom: function () {
-        var wrapper = document.createElement("div");
+        return document.createElement("div");
+    },
 
-        if (!this.faceInFrame) {
-            wrapper.innerHTML = "No Face Detected";
-            wrapper.className = "dimmed light small";
-            return wrapper;
+    detectedFaceInFrame: function () {
+        if(!this.faceInFrame) {
+            this.faceInFrame = true;
+            this.sendNotification('FACE_DETECTED');
         }
-        var large = document.createElement("div");
-        large.className = "large light";
+        this.refreshesSinceLastFace = 0;
+    },
 
-        var test = document.createElement("div");
-        test.innerHTML = "Hi There!";
-        large.appendChild(test);
-
-        wrapper.appendChild(large);
-
-        return wrapper;
+    detectedFaceMissing: function () {
+        if(this.faceInFrame) {
+            this.faceInFrame = false;
+            this.refreshesSinceLastFace = 1;
+        } else if(this.refreshesSinceLastFace > this.refreshesUntilMissing) {
+            this.sendNotification("FACE_MISSING");
+        } else {
+            this.refreshesSinceLastFace++;
+        }
     },
 
     /* scheduleRefresh()
