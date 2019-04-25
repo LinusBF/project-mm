@@ -29,6 +29,7 @@ body {
     justify-content: center;
     align-items: center;
 }
+
 .iris{
     width: 90px;
     height: 90px;
@@ -48,14 +49,29 @@ body {
     width: 200px;
     height: 200px;
     border-radius: 100% 5%;
-    transform: translateX(-8%) rotate(45deg);
+    transform: translateX(-8%) translateY(43%) rotate(45deg);
     z-index: 2;
 }
-.eye-close{
-    animation: close 800ms ease
+
+.topcircle-open{
+    animation: open 800ms ease;
 }
 
-@keyframes close{
+@keyframes open {
+    0% {
+        transform: translateX(-8%) translateY(43%) rotate(45deg);
+        border-radius: 75% 0;
+    }
+    100%{
+        transform: translateX(-8%) translateY(0) rotate(45deg);
+    }
+}
+
+.eye-blink{
+    animation: blink 800ms ease
+}
+
+@keyframes blink{
     0% {
         transform: translateX(-8%) translateY(0) rotate(45deg)
 
