@@ -62,7 +62,7 @@ Module.register("pg8-faceDetect", {
             this.refreshesSinceLastFace++;
             this.sendNotification('FACE_MISSING');
         } else {
-            this.refreshesSinceLastFace++;
+            if(this.refreshesSinceLastFace <= this.config.refreshesUntilMissing) this.refreshesSinceLastFace++;
         }
     },
 
