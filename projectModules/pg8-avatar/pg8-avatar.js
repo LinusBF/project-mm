@@ -19,7 +19,6 @@ Module.register("pg8-avatar", {
     // Define start sequence.
     start: function () {
         console.log("Starting module: " + this.name);
-        this.scheduleRefresh();
     },
 
     affectEyes: function(cssClass, add = false) {
@@ -59,7 +58,7 @@ Module.register("pg8-avatar", {
             that.affectEyes('topcircle-open', false);
             that.affectEyes('topcircle-closed', true);
             that.affectEyes('eye-close', false);
-        }, 1000);
+        }, 800);
     },
 
     // Override dom generator.
@@ -89,20 +88,14 @@ Module.register("pg8-avatar", {
         return ["avatar.css"];
     },
 
-    /* scheduleRefresh()
-     * Schedule next face check.
-     *
-     *
-     */
-    scheduleRefresh: function () {
+    startBlinkingLoop: function () {
+        if(!this.faceInFrame) return;
         var nextLoad = this.config.blinkInterval;
 
         var self = this;
         setTimeout(function () {
-            if (self.faceInFrame) {
-                self.blink();
-            }
-            self.scheduleRefresh();
+            self.blink();
+            self.startBlinkingLoop();
         }, nextLoad);
     },
 
@@ -110,6 +103,7 @@ Module.register("pg8-avatar", {
         if (notification === 'FACE_DETECTED') {
             this.faceInFrame = true;
             this.openEyes();
+            this.startBlinkingLoop();
         } else if(notification === 'FACE_MISSING') {
             this.faceInFrame = false;
             this.closeEyes();
