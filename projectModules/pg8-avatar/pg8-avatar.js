@@ -44,14 +44,22 @@ Module.register("pg8-avatar", {
 
     openEyes: function () {
         this.affectEyes('eye-open', true);
-        this.affectEyes('topcircle-open', true);
-        this.affectEyes('topcircle-closed', false);
+        const that  = this;
+        setTimeout(function() {
+            that.affectEyes('topcircle-closed', false);
+            that.affectEyes('topcircle-open', true);
+            that.affectEyes('eye-open', false);
+        }, 800);
     },
 
     closeEyes: function () {
         this.affectEyes('eye-close', true);
-        this.affectEyes('topcircle-closed', true);
-        this.affectEyes('topcircle-open', false);
+        const that  = this;
+        setTimeout(function() {
+            that.affectEyes('topcircle-open', false);
+            that.affectEyes('topcircle-closed', true);
+            that.affectEyes('eye-close', false);
+        }, 1000);
     },
 
     // Override dom generator.
