@@ -23,8 +23,8 @@ def save_speech(data, p, rate, channels):
     wf.close()
     return filename + '.wav'
 
-def delete_speech(filename):
-    os.remove(filename)
+def delete_speech(fn):
+    os.remove(fn)
     
 
 CHUNK = 1024
@@ -60,12 +60,12 @@ while num_phrases == -1 or n > 0:
     cur_data = stream.read(CHUNK)
     slid_win.append(math.sqrt(abs(audioop.avg(cur_data, 4))))
     #print slid_win[-1]
-    if(sum([x > THRESHOLD for x in slid_win]) > 0):
-        if(not started):
+    if sum([x > THRESHOLD for x in slid_win] > 0):
+        if not started:
             print "Starting record of phrase"
             started = True
         audio2send.append(cur_data)
-    elif (started is True):
+    elif started is True:
         print "Silence reached with intensity of " + str(slid_win[-1])
         filename = save_speech(list(prev_audio) + audio2send, p, RATE, CHANNELS)
         print "Finished"
