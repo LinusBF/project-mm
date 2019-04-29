@@ -7,9 +7,9 @@ import audioop
 CHUNK = 1024
 FORMAT = pyaudio.paInt16
 CHANNELS = 1
-RATE = 16000
+RATE = 44100
 
-def audio_int(num_samples=50):
+def audio_int(num_samples= 50):
     p = pyaudio.PyAudio()
     
     stream = p.open(format=FORMAT,
@@ -24,5 +24,6 @@ def audio_int(num_samples=50):
     print "Avrage intensity" , r
     stream.close()
     p.terminate()
+    return r
 
-audio_int(50)        
+      
