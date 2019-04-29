@@ -29,7 +29,10 @@ Module.register("pg8-avatar", {
                 element.classList.add('eye-close');
             }
         );
+
+        const that = this;
         setTimeout(function () {
+            if (!that.faceInFrame) return;
             Array.from(document.getElementsByClassName("topcircle")).forEach(
                 function (element) {
                     element.classList.remove('eye-close');
@@ -43,6 +46,15 @@ Module.register("pg8-avatar", {
             function (element) {
                 element.classList.add('topcircle-open');
                 element.classList.remove('topcircle-closed');
+            }
+        );
+    },
+
+    closeEyes: function () {
+        Array.from(document.getElementsByClassName("topcircle")).forEach(
+            function (element) {
+                element.classList.add('topcircle-closed');
+                element.classList.remove('topcircle-open');
             }
         );
     },
@@ -86,8 +98,8 @@ Module.register("pg8-avatar", {
         setTimeout(function () {
             if (self.faceInFrame) {
                 self.blink();
-                self.scheduleRefresh();
             }
+            self.scheduleRefresh();
         }, nextLoad);
     },
 
@@ -95,7 +107,9 @@ Module.register("pg8-avatar", {
         if (notification === 'FACE_DETECTED') {
             this.faceInFrame = true;
             this.openEyes();
-            this.scheduleRefresh();
+        } else if(notification === 'FACE_MISSING') {
+            this.faceInFrame = false;
+            this.closeEyes();
         }
     },
 });
