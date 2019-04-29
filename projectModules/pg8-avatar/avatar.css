@@ -56,9 +56,13 @@ body {
 }
 
 .topcircle-open{
-    animation: open 800ms ease;
     transform: translateX(-8%) translateY(0%) rotate(45deg);
 }
+
+.eye-open{
+    animation: open 800ms ease
+}
+
 @keyframes open {
     0% {
         transform: translateX(-8%) translateY(43%) rotate(45deg);

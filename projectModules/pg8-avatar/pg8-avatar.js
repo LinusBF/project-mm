@@ -22,41 +22,36 @@ Module.register("pg8-avatar", {
         this.scheduleRefresh();
     },
 
-    blink: function () {
-        if (!this.faceInFrame) return;
+    affectEyes: function(cssClass, add = false) {
         Array.from(document.getElementsByClassName("topcircle")).forEach(
             function (element) {
-                element.classList.add('eye-close');
+                if(add) element.classList.add(cssClass);
+                else element.classList.remove(cssClass);
             }
         );
+    },
+
+    blink: function () {
+        if (!this.faceInFrame) return;
+        this.affectEyes('eye-blink', true);
 
         const that = this;
         setTimeout(function () {
             if (!that.faceInFrame) return;
-            Array.from(document.getElementsByClassName("topcircle")).forEach(
-                function (element) {
-                    element.classList.remove('eye-close');
-                }
-            );
+            that.affectEyes('eye-blink', false);
         }, 1000);
     },
 
     openEyes: function () {
-        Array.from(document.getElementsByClassName("topcircle")).forEach(
-            function (element) {
-                element.classList.add('topcircle-open');
-                element.classList.remove('topcircle-closed');
-            }
-        );
+        this.affectEyes('eye-open', true);
+        this.affectEyes('topcircle-open', true);
+        this.affectEyes('topcircle-closed', false);
     },
 
     closeEyes: function () {
-        Array.from(document.getElementsByClassName("topcircle")).forEach(
-            function (element) {
-                element.classList.add('topcircle-closed');
-                element.classList.remove('topcircle-open');
-            }
-        );
+        this.affectEyes('eye-close', true);
+        this.affectEyes('topcircle-closed', true);
+        this.affectEyes('topcircle-open', false);
     },
 
     // Override dom generator.
