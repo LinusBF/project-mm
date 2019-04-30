@@ -1,12 +1,13 @@
 {
   "name": "talk-to-df",
-  "main": "dist/bundle.js",
+  "main": "index.js",
   "scripts": {
-    "build": "webpack --config webpack.config.js",
-    "deploy": "npm run build && ibmcloud fn action update talk-to-df dist/bundle.js --kind nodejs:10"
+    "deploy": "ibmcloud fn action update talk-to-df talkToDF.zip --kind nodejs:10",
+    "zip:windows": "cd .. && zipFunction.bat talkToDF && cd talkToDF",
+    "deploy:windows": "npm run zip:windows && npm run deploy && npm run cleanup:windows",
+    "cleanup:windows": "del talkToDF.zip"
   },
-  "dependencies": {},
-  "devDependencies": {
-    "webpack": "^3.8.1"
+  "dependencies": {
+    "dialogflow": "^0.8.2"
   }
 }
