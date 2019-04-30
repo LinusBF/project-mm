@@ -9,9 +9,8 @@ FORMAT = pyaudio.paInt16
 CHANNELS = 1
 RATE = 44100
 
-def audio_int(num_samples= 50):
+def audio_intensity(num_samples= 200):
     p = pyaudio.PyAudio()
-    
     stream = p.open(format=FORMAT,
                     channels=CHANNELS,
                     rate=RATE,

@@ -9,6 +9,14 @@ import time
 import audioop
 from utils import audio_int
 
+CHUNK = 1024
+FORMAT = pyaudio.paInt16
+CHANNELS = 1
+RATE = 44100
+THRESHOLD = 4500
+SILENCE_LIMIT = 1
+PREV_AUDIO = 0.5
+
 def save_speech(data, p, rate, channels):
     """ Saves mic data to temporary WAV file. Returns filename of saved
         file """
@@ -25,64 +33,59 @@ def save_speech(data, p, rate, channels):
 
 def delete_speech(fn):
     os.remove(fn)
-    
 
-CHUNK = 1024
-FORMAT = pyaudio.paInt16
-CHANNELS = 1
-RATE = 44100
-THRESHOLD =  audio_int(200) + 300
-SILENCE_LIMIT = 1
-PREV_AUDIO = 0.5
+def listen_to_speech(threshold):
+    sentSpeech = False
+    global THRESHOLD
+    THRESHOLD = threshold +300
+    num_phrases = -1
+    p = pyaudio.PyAudio()
+    stream = p.open(format=FORMAT,
+                    channels=CHANNELS,
+                    rate=RATE,
+                    input=True,
+                    frames_per_buffer=CHUNK)
+    audio2send = []
+    cur_data = ''  # current chunk  of audio data
+    rel = RATE / CHUNK
+    slid_win = deque(maxlen=SILENCE_LIMIT * rel)
+    # Prepend audio from 0.5 seconds before noise was detected
+    prev_audio = deque(maxlen=PREV_AUDIO * rel)
+    started = False
+    n = num_phrases
+    response = []
 
+    print "Found noice floor at " + str(THRESHOLD)
 
+    while num_phrases == -1 or n > 0:
+        cur_data = stream.read(CHUNK)
+        slid_win.append(math.sqrt(abs(audioop.avg(cur_data, 4))))
+        #print slid_win[-1]
+        if sum([x > THRESHOLD for x in slid_win] > 0):
+            if not started:
+                print "Starting record of phrase"
+                started = True
+            audio2send.append(cur_data)
+        elif started is True:
+            print "Silence reached with intensity of " + str(slid_win[-1])
+            filename = save_speech(list(prev_audio) + audio2send, p, RATE, CHANNELS)
+            print "Finished"
+            sentSpeech = True
 
-num_phrases = -1
-p = pyaudio.PyAudio()
-stream = p.open(format=FORMAT,
-                channels=CHANNELS,
-                rate=RATE,
-                input=True,
-                frames_per_buffer=CHUNK)
-audio2send = []
-cur_data = ''  # current chunk  of audio data
-rel = RATE / CHUNK
-slid_win = deque(maxlen=SILENCE_LIMIT * rel)
-# Prepend audio from 0.5 seconds before noise was detected
-prev_audio = deque(maxlen=PREV_AUDIO * rel)
-started = False
-n = num_phrases
-response = []
+            print "Deleting local file"
+            delete_speech(filename)
+            print "File Deleted"
+            started = False
+            slid_win = deque(maxlen=SILENCE_LIMIT * rel)
+            prev_audio = deque(maxlen=PREV_AUDIO * rel)
+            audio2send = []
+            n -= 1
+        else:
+            prev_audio.append(cur_data)
 
-print "Found noice floor at " + str(THRESHOLD)
+    print("* done recording")
 
-while num_phrases == -1 or n > 0:
-    cur_data = stream.read(CHUNK)
-    slid_win.append(math.sqrt(abs(audioop.avg(cur_data, 4))))
-    #print slid_win[-1]
-    if sum([x > THRESHOLD for x in slid_win] > 0):
-        if not started:
-            print "Starting record of phrase"
-            started = True
-        audio2send.append(cur_data)
-    elif started is True:
-        print "Silence reached with intensity of " + str(slid_win[-1])
-        filename = save_speech(list(prev_audio) + audio2send, p, RATE, CHANNELS)
-        print "Finished"
-        
-        print "Deleting local file"
-        delete_speech(filename)
-        print "File Deleted"
-        started = False
-        slid_win = deque(maxlen=SILENCE_LIMIT * rel)
-        prev_audio = deque(maxlen=PREV_AUDIO * rel)
-        audio2send = []
-        n -= 1
-    else:
-        prev_audio.append(cur_data)
-
-print("* done recording")
-
-stream.stop_stream()
-stream.close()
-p.terminate()
+    stream.stop_stream()
+    stream.close()
+    p.terminate()
+    return sentSpeech
