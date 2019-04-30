@@ -1,0 +1,20 @@
+{
+  "name": "talk-to-df",
+  "version": "1.0.0",
+  "description": "Sample OpenWhisk NodeJS serverless framework service.",
+  "main": "handler.js",
+  "scripts": {
+    "deploy": "npm run retarded:fix && serverless deploy -v",
+    "retarded:fix": "npm rebuild grpc --target=6.1.0 --target_arch=x64 --target_platform=linux --target_libc=glibc"
+  },
+  "keywords": [
+    "serverless",
+    "openwhisk"
+  ],
+  "devDependencies": {
+    "serverless-openwhisk": ">=0.13.0"
+  },
+  "dependencies": {
+    "dialogflow": "^0.8.2"
+  }
+}
