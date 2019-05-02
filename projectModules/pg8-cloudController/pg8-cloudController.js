@@ -28,7 +28,7 @@ Module.register("pg8-cloudController", {
         xhttp.onreadystatechange = function () {
             that.handleResponse(this.readyState === XMLHttpRequest.DONE, this.status, JSON.parse(this.responseText), sender);
         };
-        xhttp.open(method, this.config.endpoint + path, true);
+        xhttp.open(method, this.config.endpoint + path + "?blocking=true", true);
         if(method === "POST"){
             xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
         }
