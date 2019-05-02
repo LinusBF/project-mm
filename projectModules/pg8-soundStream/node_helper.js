@@ -49,10 +49,15 @@ module.exports = NodeHelper.create({
 
     socketNotificationReceived: function(notification, payload) {
 	if("FILE_RECORDED" === notification){
-		const data = fs.readFileSync(__dirname + "/" + payload.filename);
-		const wav = new wavefile(data);
-		const b64 = wav.toBase64();
-		this.sendSocketotification("FILE_CONVERTED" , {data:b64, filename: payload.filename});
+	    if(payload.filename) {
+            const data = fs.readFileSync(__dirname + "/" + payload.filename);
+            const wav = new wavefile(data);
+            const b64 = wav.toBase64();
+            this.sendSocketotification("FILE_CONVERTED", {data: b64, filename: payload.filename});
+        } else {
+	        console.log("Missing filename in payload for FILE_RECORDED");
+	        console.log(payload)
+        }
 	}
     },
 });
