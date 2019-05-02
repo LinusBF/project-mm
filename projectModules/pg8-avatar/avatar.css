@@ -1,0 +1,110 @@
+body {
+    background: black;
+    margin: 0;
+}
+
+.avatar {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+
+    max-width: 500px;
+    margin: auto;
+}
+
+.eye1,
+.eye2{
+    position: relative;
+    margin: 0 1rem;
+}
+
+.bottomcircle{
+    background: #fff;
+    width: 170px;
+    height: 170px;
+    border-radius: 90% 2%;
+    transform: translateY(70%) rotate(45deg);
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.iris{
+    width: 90px;
+    height: 90px;
+    background: green;
+    border-radius: 50%;
+    display: flex;
+    position: relative;
+}
+
+.topcircle{
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: black;
+    width: 200px;
+    height: 200px;
+    border-radius: 100% 5%;
+    transform: translateX(-8%) translateY(0%) rotate(45deg);
+    z-index: 2;
+}
+
+.topcircle-closed{
+    transform: translateX(-8%) translateY(50%) rotate(45deg);
+}
+
+.topcircle-open{
+    transform: translateX(-8%) translateY(0%) rotate(45deg);
+}
+
+.eye-open{
+    animation: open 800ms ease
+}
+
+@keyframes open {
+    0% {
+        transform: translateX(-8%) translateY(43%) rotate(45deg);
+        border-radius: 75% 0;
+    }
+    100%{
+        transform: translateX(-8%) translateY(0) rotate(45deg);
+    }
+}
+
+.eye-blink{
+    animation: blink 800ms ease;
+}
+
+@keyframes blink{
+    0% {
+        transform: translateX(-8%) translateY(0) rotate(45deg)
+
+    }
+    50%{
+        transform: translateX(-8%) translateY(50%) rotate(45deg);
+        border-radius: 75% 0;
+    }
+    100%{
+        transform: translateX(-8%) translateY(0) rotate(45deg)
+    }
+}
+
+.eye-close{
+    animation: close 800ms ease
+}
+
+@keyframes close{
+    0% {
+        transform: translateX(-8%) translateY(0) rotate(45deg)
+
+    }
+    100%{
+        transform: translateX(-8%) translateY(50%) rotate(45deg);
+        border-radius: 75% 0;
+    }
+}
+
+
+

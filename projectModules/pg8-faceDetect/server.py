@@ -11,4 +11,4 @@ def detect_face():
     return jsonify({'data': face_detect.face_in_frame()})
 
 
-app.run()
+app.run(port=5001)
