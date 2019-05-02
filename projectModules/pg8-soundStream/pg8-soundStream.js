@@ -16,7 +16,7 @@ Module.register("pg8-soundStream", {
     },
 
     audioIntensity: [],
-    medianIntensity: 0,
+    medianIntensity: 6000,
     listeningActive: false,
     sentSpeech: false,
     //Define
@@ -30,38 +30,47 @@ Module.register("pg8-soundStream", {
         this.scheduleRefresh();
     },
 
+    talkToPythonServer: function(method, path, data, callback) {
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = callback;
+        xhttp.open(method, this.config.url + path, true);
+        xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        xhttp.send(JSON.stringify({data: data}));
+    },
+
     listenToSpeech: function () {
         if (!this.listeningActive) return;
-        if(this.audioIntensity.length < 1){
+        if(this.audioIntensity.length < 3){
             setTimeout(this.listenToSpeech, 1500);
             return;
         }
         console.log("Starting lts with intensity of " + this.medianIntensity);
         var that = this;
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function () {
+        this.talkToPythonServer("POST", "/listen-to-speech", this.medianIntensity, function () {
             if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
                 var response = JSON.parse(this.responseText);
-                that.sendSocketNotification("FILE_RECORDED", response.data);
+                that.sendSocketNotification("FILE_RECORDED", {filename: response.data});
                 that.listenToSpeech();
             }
-        };
-        xhttp.open("POST", this.config.url + "/listen-to-speech", true);
-        xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-        xhttp.send(JSON.stringify({data: this.medianIntensity}));
+        });
     },
 
     updateAudioIntensity: function () {
         var that = this;
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function () {
+        this.talkToPythonServer("GET", "/get-intensity", "", function () {
             if (this.readyState === 4 && this.status === 200) {
                 var response = JSON.parse(this.responseText);
                 that.calcMedianIntensity(response.data);
             }
-        };
-        xhttp.open("GET", this.config.url + "/get-threshold", true);
-        xhttp.send();
+        });
+    },
+
+    deleteSpeech: function (filename) {
+        this.talkToPythonServer("POST", "/delete-speech", filename, function () {
+            if (this.readyState === 4 && this.status === 200) {
+                console.log("Deleted file: " + filename);
+            }
+        });
     },
 
     calcMedianIntensity: function (new_intensity) {
@@ -71,7 +80,7 @@ Module.register("pg8-soundStream", {
     },
 
     getMedian: function(arr){
-        if(arr.length ===0) return 0;
+        if(arr.length === 0) return 0;
         arr.sort(function(a,b){
             return a-b;
         });
@@ -96,6 +105,7 @@ Module.register("pg8-soundStream", {
 
     socketNotificationReceived: function (notification, payload) {
         if (notification === "FILE_CONVERTED") {
+            this.deleteSpeech(payload.filename);
             this.sendNotification("REQUEST_CLOUD", {path: "/magic-mirror-dev-talk-to-df", data: payload.data});
         }
     },

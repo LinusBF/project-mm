@@ -1,12 +1,12 @@
 
 import sys
-import os 
-from collections import deque 
+import os
+from collections import deque
 from os import path
 import pyaudio
 import wave
 import math
-import time 
+import time
 import audioop
 
 CHUNK = 1024
@@ -35,6 +35,7 @@ def save_speech(data, p, rate, channels):
 
 def delete_speech(fn):
     os.remove(fn)
+    return True
 
 def listen_to_speech(threshold):
     savedFile = False
@@ -74,10 +75,6 @@ def listen_to_speech(threshold):
             filename = save_speech(list(prev_audio) + audio2send, p, RATE, CHANNELS)
             print "Finished"
             savedFile = filename
-
-            #print "Deleting local file"
-            #delete_speech(filename)
-            #print "File Deleted"
 	    num_phrases = 1
             started = False
             slid_win = deque(maxlen=SILENCE_LIMIT * rel)
