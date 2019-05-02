@@ -1,3 +1,4 @@
+
 import sys
 import os 
 from collections import deque 
@@ -7,7 +8,6 @@ import wave
 import math
 import time 
 import audioop
-from utils import audio_int
 
 CHUNK = 1024
 FORMAT = pyaudio.paInt16
@@ -16,6 +16,8 @@ RATE = 44100
 THRESHOLD = 4500
 SILENCE_LIMIT = 1
 PREV_AUDIO = 0.5
+
+
 
 def save_speech(data, p, rate, channels):
     """ Saves mic data to temporary WAV file. Returns filename of saved
@@ -35,7 +37,7 @@ def delete_speech(fn):
     os.remove(fn)
 
 def listen_to_speech(threshold):
-    sentSpeech = False
+    savedFile = False
     global THRESHOLD
     THRESHOLD = threshold +300
     num_phrases = -1
@@ -44,7 +46,8 @@ def listen_to_speech(threshold):
                     channels=CHANNELS,
                     rate=RATE,
                     input=True,
-                    frames_per_buffer=CHUNK)
+                    frames_per_buffer=CHUNK
+                    )
     audio2send = []
     cur_data = ''  # current chunk  of audio data
     rel = RATE / CHUNK
@@ -57,11 +60,11 @@ def listen_to_speech(threshold):
 
     print "Found noice floor at " + str(THRESHOLD)
 
-    while num_phrases == -1 or n > 0:
+    while num_phrases < 1:
         cur_data = stream.read(CHUNK)
         slid_win.append(math.sqrt(abs(audioop.avg(cur_data, 4))))
         #print slid_win[-1]
-        if sum([x > THRESHOLD for x in slid_win] > 0):
+        if (sum([x > THRESHOLD for x in slid_win]) > 0):
             if not started:
                 print "Starting record of phrase"
                 started = True
@@ -70,11 +73,12 @@ def listen_to_speech(threshold):
             print "Silence reached with intensity of " + str(slid_win[-1])
             filename = save_speech(list(prev_audio) + audio2send, p, RATE, CHANNELS)
             print "Finished"
-            sentSpeech = True
+            savedFile = filename
 
-            print "Deleting local file"
-            delete_speech(filename)
-            print "File Deleted"
+            #print "Deleting local file"
+            #delete_speech(filename)
+            #print "File Deleted"
+	    num_phrases = 1
             started = False
             slid_win = deque(maxlen=SILENCE_LIMIT * rel)
             prev_audio = deque(maxlen=PREV_AUDIO * rel)
@@ -88,4 +92,4 @@ def listen_to_speech(threshold):
     stream.stop_stream()
     stream.close()
     p.terminate()
-    return sentSpeech
+    return savedFile

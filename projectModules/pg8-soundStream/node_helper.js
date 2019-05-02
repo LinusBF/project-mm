@@ -6,6 +6,9 @@
  */
 
 var NodeHelper = require("node_helper");
+const fs = require("fs");
+const wavefile = require("wavefile");
+const axios = require('axios');
 
 module.exports = NodeHelper.create({
     server: null,
@@ -19,7 +22,9 @@ module.exports = NodeHelper.create({
 
         const spawn = require("child_process").spawn;
         this.server = spawn("python", ['-u', serverPath]);
-        this.addServerExitLogging();
+	//this.addServerErrorLogging();
+        this.addServerInfoLogging();
+ 	this.addServerExitLogging();
     },
     addServerInfoLogging: function() {
         this.server.stdout.on("data", (data) => {
@@ -42,8 +47,13 @@ module.exports = NodeHelper.create({
         console.log("Stopping module helper: " + this.name);
         if (this.server !== null) this.server.kill('SIGINT');
     },
-    /*
+    
     socketNotificationReceived: function(notification, payload) {
-
-    },*/
+	if("FILE_RECORDED" === notification){
+		const data = fs.readFileSync(__dirname + "/" + payload.filename);
+		const wav = new wavefile(data);
+		const b64 = wav.toBase64();	
+		this.sendSocketotification("FILE_CONVERTED" , {data:b64});
+	}	
+    },
 });
