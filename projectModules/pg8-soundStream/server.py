@@ -22,4 +22,11 @@ def audio_intensity():
     return jsonify({'data': utils.audio_intensity()})
 
 
+@app.route("/delete-file")
+@cross_origin()
+def delete_file():
+    filename = request.get_json()['filename'];
+    return jsonify({'data': audio_stream.delete_speech(filename)})
+
+
 app.run(port = 5002)
