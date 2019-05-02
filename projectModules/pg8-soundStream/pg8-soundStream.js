@@ -25,11 +25,17 @@ Module.register("pg8-soundStream", {
         this.medianIntensity = 6000;
         this.listeningActive = false;
         this.updateAudioIntensity();
+        this.updateAudioIntensity();
+        this.updateAudioIntensity();
         this.scheduleRefresh();
     },
 
     listenToSpeech: function () {
         if (!this.listeningActive) return;
+        if(this.audioIntensity.length < 1){
+            setTimeout(this.listenToSpeech, 1500);
+            return;
+        }
         console.log("Starting lts with intensity of " + this.medianIntensity);
         var that = this;
         var xhttp = new XMLHttpRequest();
@@ -82,6 +88,10 @@ Module.register("pg8-soundStream", {
             that.updateAudioIntensity();
             that.scheduleRefresh();
         }, nextLoad);
+    },
+
+    getDom: function() {
+
     },
 
     socketNotificationReceived: function (notification, payload) {
