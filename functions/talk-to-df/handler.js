@@ -14,7 +14,7 @@ function talkToDF(params) {
                 .then(res => resolve({
                     headers: {"Content-Type": "application/json"},
                     status: 200,
-                    body: JSON.stringify({data: "intent: " + res.fulfillmentText})
+                    body: JSON.stringify({data: "intent: " + res.fulfillmentText, module: "faceDetect"})
                 }))
                 .catch(err => reject({
                     headers: {"Content-Type": "application/json"},
