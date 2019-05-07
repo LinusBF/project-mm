@@ -38,7 +38,7 @@ Module.register("pg8-cloudController", {
     },
 
     handleResponse: function(success, status, data, sender){
-        if(data instanceof String && data.startsWith("{")) data = JSON.parse(data);
+        if(typeof data === "string" && data.startsWith("{")) data = JSON.parse(data);
         let response = data;
         if(data.response.result.body) { //Accessing dumb IBM Cloud action response wrapper
             response = JSON.parse(data.response.result.body);
