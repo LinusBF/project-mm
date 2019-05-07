@@ -51,6 +51,7 @@ def listen_to_speech():
     cur_data = ''  # current chunk  of audio data
     rel = RATE / CHUNK
     response = []
+    slid_win = deque(maxlen = WINDOW_SIZE * rel)
 
     print "Waiting for 'v' to be pressed"
 
