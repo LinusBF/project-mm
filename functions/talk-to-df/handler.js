@@ -6,15 +6,16 @@ const waveFile = require("wavefile");
 
 function talkToDF(params) {
     return new Promise((resolve, reject) => {
-        const file = params.file || null;
+        const file = params.data.soundFile || null;
+        const fileRate = params.data.fileRate || null;
         if (file) {
             const wavFile = new waveFile();
             wavFile.fromBase64(file);
-            runSample(file, params.GA_EMAIL, params.GA_KEY)
+            runSample(file, fileRate, params.GA_EMAIL, params.GA_KEY)
                 .then(res => resolve({
                     headers: {"Content-Type": "application/json"},
                     status: 200,
-                    body: JSON.stringify({data: "intent: " + res.fulfillmentText, module: "faceDetect"})
+                    body: JSON.stringify({data: "intent: " + res.fulfillmentText, module: "faceDetect"}) //TODO - Change module to handle response
                 }))
                 .catch(err => reject({
                     headers: {"Content-Type": "application/json"},
@@ -31,10 +32,10 @@ function talkToDF(params) {
     });
 }
 
-function runSample(buffer, gaEmail, gaKey) {
+function runSample(buffer, rate, gaEmail, gaKey) {
     return new Promise((resolve, reject) => {
         const encoding = 'AUDIO_ENCODING_LINEAR_16';
-        const sampleRateHertz = "44100";
+        const sampleRateHertz = rate;
         const languageCode = "en-US";
         // A unique identifier for the given session
         const sessionId = uuid.v4();
