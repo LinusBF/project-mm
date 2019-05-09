@@ -7,38 +7,37 @@ const cheerio = require('cheerio');
 
 const scrapeRecipe = (ingredientList) => {
     return new Promise(((resolve, reject) => {
-        getRecipeURL(ingredientList)
-            .then(scrapeURL)
-            .then(recipe => {
-                resolve({
-                    headers: {"Content-Type": "application/json"},
-                    status: 200,
-                    body: JSON.stringify({data: recipe})
+        getRecipeURLs(ingredientList)
+            .then(urls => {
+                const promiseList = [];
+                urls.forEach(element => {
+                    promiseList.push(scrapeURL(element));
                 });
+                Promise.all(promiseList)
+                    .then(recipes => {
+                        resolve({
+                            headers: {"Content-Type": "application/json"},
+                            status: 200,
+                            body: JSON.stringify({data: recipes})
+                        })
+                    }).catch(error => {
+                        console.log(error);
+                })
 
             })
-            .catch(error => {
-                reject({
-                    headers: {"Content-Type": "application/json"},
-                    status: 500,
-                    body: JSON.stringify({data: error})
-                });
-            });
     }))
 };
 
-const getRecipeURL = (ingredientList) => {
+const getRecipeURLs = (ingredientList) => {
     return new Promise((resolve, reject) => {
-        let searchIngredients = '';
-        ingredientList.forEach((currentIngredient) => {
-            searchIngredients += `${currentIngredient}, `
-        });
-        const searchIngredientsFinal = searchIngredients.slice(0, -2);
-        console.log(searchIngredientsFinal);
-        axios.get(`https://www.food2fork.com/api/search?key=8c4c0167f29a3056495f6d125a67eed4&q=${searchIngredientsFinal}`)
+        const ingredientsUrl = ingredientList.join(',');
+        axios.get(`https://www.food2fork.com/api/search?key=8c4c0167f29a3056495f6d125a67eed4&q=${ingredientsUrl}&page=5`)
             .then(response => {
-                //console.log(response.data.recipes[0].f2f_url);
-                resolve(response.data.recipes[0].f2f_url);
+                const recipeURLs = [];
+                response.data.recipes.forEach(element => {
+                    recipeURLs.push(element.f2f_url)
+                });
+                resolve(recipeURLs);
             })
             .catch(error => {
                 reject(console.log(error));
@@ -68,11 +67,11 @@ const scrapeURL = (url) => {
 
 const extractTitle = ($) => {
     return $('.recipe-title').text();
-}
+};
 
 const extractImage = ($) => {
     return $('.recipe-image').attr('src');
-}
+};
 
 const extractIngredients = ($) => {
     const list = [];
@@ -81,7 +80,7 @@ const extractIngredients = ($) => {
             list.push(cheerio(element).text());
         });
     return list;
-}
+};
 
-const ingredientList = ['veal', 'asparagus'];
+const ingredientList = ['veal'];
 scrapeRecipe(ingredientList).then(res => console.log(res));
