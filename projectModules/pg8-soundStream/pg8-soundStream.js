@@ -13,7 +13,6 @@ Module.register("pg8-soundStream", {
     defaults: {
         url: "http://localhost:5002",
     },
-
     listeningActive: false,
     waitingForCloud: false,
     //Define
@@ -23,7 +22,7 @@ Module.register("pg8-soundStream", {
     },
 
     talkToPythonServer: function(method, path, data, callback) {
-        var xhttp = new XMLHttpRequest();
+        const xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = callback;
         xhttp.open(method, this.config.url + path, true);
         xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
@@ -33,10 +32,10 @@ Module.register("pg8-soundStream", {
     listenToSpeech: function () {
         if (!this.listeningActive) return;
         if (this.waitingForCloud) return;
-        var that = this;
-        this.talkToPythonServer("POST", "/listen-to-speech", null ,function () {
+        const that = this;
+        this.talkToPythonServer("POST", "/listen-to-speech", null, function () {
             if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
-                var response = JSON.parse(this.responseText);
+                const response = JSON.parse(this.responseText);
                 that.waitingForCloud = true;
                 that.sendSocketNotification("FILE_RECORDED", {filename: response.data});
             }
