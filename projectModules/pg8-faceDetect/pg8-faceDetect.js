@@ -13,6 +13,7 @@ Module.register("pg8-faceDetect", {
     defaults: {
         refreshRate: 1000,
         refreshesUntilMissing: 5,
+        url: "http://localhost:5001",
     },
 
     refreshesSinceLastFace: 0,
@@ -37,7 +38,7 @@ Module.register("pg8-faceDetect", {
                 }
             }
         };
-        xhttp.open("GET", "http://localhost:5000/detect-face", true);
+        xhttp.open("GET", this.config.url + "/detect-face", true);
         xhttp.send();
     },
 
