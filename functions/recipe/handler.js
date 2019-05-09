@@ -48,11 +48,11 @@ const scrapeURL = (url) => {
                 const $ = cheerio.load(html);
                 const title = extractTitle($);
                 const img = extractImage($);
-                const ingr = extractIngredients($);
+                const ingredients = extractIngredients($);
                 resolve({
                     title: title,
                     img: img,
-                    ingr: ingr
+                    ingredients: ingredients
                 })
             })
             .catch(error => {
@@ -71,7 +71,7 @@ const extractImage = ($) => {
 
 const extractIngredients = ($) => {
     const list = [];
-    const ul = $('.about-container > ul').find('li')
+    $('.about-container > ul').find('li')
         .each((index, element) => {
             list.push(cheerio(element).text());
         });
