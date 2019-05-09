@@ -14,8 +14,6 @@ Module.register("pg8-soundStream", {
         url: "http://localhost:5002",
     },
 
-    audioIntensity: [],
-    medianIntensity: 6000,
     listeningActive: false,
     waitingForCloud: false,
     //Define
@@ -36,7 +34,7 @@ Module.register("pg8-soundStream", {
         if (!this.listeningActive) return;
         if (this.waitingForCloud) return;
         var that = this;
-        this.talkToPythonServer("POST", "/listen-to-speech", this.medianIntensity, function () {
+        this.talkToPythonServer("POST", "/listen-to-speech", null ,function () {
             if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
                 var response = JSON.parse(this.responseText);
                 that.waitingForCloud = true;

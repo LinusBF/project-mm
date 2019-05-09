@@ -17,7 +17,7 @@ def listen_to_speech():
 @app.route("/delete-file", methods = ['POST'])
 @cross_origin()
 def delete_file():
-    filename = request.get_json()['data'];
+    filename = request.get_json()['data']
     return jsonify({'data': audio_stream.delete_speech(filename)})
 
 
