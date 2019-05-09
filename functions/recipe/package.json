@@ -1,5 +1,5 @@
 {
-  "name": "talk-to-df",
+  "name": "recipe",
   "version": "1.0.0",
   "description": "Sample OpenWhisk NodeJS serverless framework service.",
   "main": "handler.js",
