@@ -5,9 +5,9 @@ const rp = require('request-promise');
 const cheerio = require('cheerio');
 
 
-const scrapeRecipe = () => {
+const scrapeRecipe = (ingredientList) => {
     return new Promise(((resolve, reject) => {
-        getRecipeURL()
+        getRecipeURL(ingredientList)
             .then(scrapeURL)
             .then(recipe => {
                 resolve({
@@ -27,10 +27,15 @@ const scrapeRecipe = () => {
     }))
 };
 
-const getRecipeURL = () => {
+const getRecipeURL = (ingredientList) => {
     return new Promise((resolve, reject) => {
-
-        axios.get('https://www.food2fork.com/api/search?key=8c4c0167f29a3056495f6d125a67eed4&q=pork')
+        let searchIngredients = '';
+        ingredientList.forEach((currentIngredient) => {
+            searchIngredients += `${currentIngredient}, `
+        });
+        const searchIngredientsFinal = searchIngredients.slice(0, -2);
+        console.log(searchIngredientsFinal);
+        axios.get(`https://www.food2fork.com/api/search?key=8c4c0167f29a3056495f6d125a67eed4&q=${searchIngredientsFinal}`)
             .then(response => {
                 //console.log(response.data.recipes[0].f2f_url);
                 resolve(response.data.recipes[0].f2f_url);
@@ -78,5 +83,5 @@ const extractIngredients = ($) => {
     return list;
 }
 
-
-scrapeRecipe().then(res => console.log(res));
+const ingredientList = ['veal', 'asparagus'];
+scrapeRecipe(ingredientList).then(res => console.log(res));
