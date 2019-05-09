@@ -71,6 +71,7 @@ def listen_to_speech():
     filename = save_speech(audio2send, p, RATE, CHANNELS)
 
     print "File saved"
+    print filename
 
     savedFile = filename
 
