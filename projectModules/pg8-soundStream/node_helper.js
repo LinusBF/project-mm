@@ -52,6 +52,7 @@ module.exports = NodeHelper.create({
             if (payload.filename) {
                 const data = fs.readFileSync(__dirname + "/" + payload.filename);
                 const wav = new wavefile(data);
+                wav.toALaw();
                 const b64 = wav.toBase64();
                 this.sendSocketNotification("FILE_CONVERTED", {data: b64, fileRate: wav.sampleRate, filename: payload.filename});
             } else {

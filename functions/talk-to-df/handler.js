@@ -11,7 +11,8 @@ function talkToDF(params) {
         if (file) {
             const wavFile = new waveFile();
             wavFile.fromBase64(file);
-            runSample(file, fileRate, params.GA_EMAIL, params.GA_KEY)
+            wavFile.fromALaw();
+            runSample(wavFile.toBuffer(), fileRate, params.GA_EMAIL, params.GA_KEY)
                 .then(res => resolve({
                     headers: {"Content-Type": "application/json"},
                     status: 200,
