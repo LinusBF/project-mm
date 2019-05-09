@@ -5,9 +5,9 @@ const rp = require('request-promise');
 const cheerio = require('cheerio');
 
 
-const scrapeRecipe = (ingredientList) => {
+const scrapeRecipes = (param) => {
     return new Promise(((resolve, reject) => {
-        getRecipeURLs(ingredientList)
+        getRecipeURLs(param.data.ingredients)
             .then(urls => {
                 const promiseList = [];
                 urls.forEach(element => {
@@ -82,5 +82,4 @@ const extractIngredients = ($) => {
     return list;
 };
 
-const ingredientList = ['veal'];
-scrapeRecipe(ingredientList).then(res => console.log(res));
+exports.scrapeRecipes = scrapeRecipes;
