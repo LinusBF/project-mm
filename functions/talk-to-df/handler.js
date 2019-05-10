@@ -11,11 +11,20 @@ function talkToDF(params) {
         if (file) {
             const wavFile = new waveFile();
             wavFile.fromBase64(file);
-            runSample(file, fileRate, params.GA_EMAIL, params.GA_KEY)
+            wavFile.fromALaw();
+            runSample(wavFile.toBuffer(), fileRate, params.GA_EMAIL, params.GA_KEY)
                 .then(res => resolve({
                     headers: {"Content-Type": "application/json"},
                     status: 200,
-                    body: JSON.stringify({data: "intent: " + res.fulfillmentText, module: "faceDetect"}) //TODO - Change module to handle response
+                    body: JSON.stringify({
+                        data: {
+                            query: res.queryText,
+                            intent: res.intent.displayName,
+                            confidence: res.intentDetectionConfidence,
+                            message: res.fulfillmentText
+                        },
+                        module: "pg8-avatarConversation"
+                    }) //TODO - Change module to handle response
                 }))
                 .catch(err => reject({
                     headers: {"Content-Type": "application/json"},
