@@ -16,7 +16,15 @@ function talkToDF(params) {
                 .then(res => resolve({
                     headers: {"Content-Type": "application/json"},
                     status: 200,
-                    body: JSON.stringify({data: "intent: " + res.fulfillmentText, module: "faceDetect"}) //TODO - Change module to handle response
+                    body: JSON.stringify({
+                        data: {
+                            query: res.queryText,
+                            intent: res.intent.displayName,
+                            confidence: res.intentDetectionConfidence,
+                            message: res.fulfillmentText
+                        },
+                        module: "pg8-avatarConversation"
+                    }) //TODO - Change module to handle response
                 }))
                 .catch(err => reject({
                     headers: {"Content-Type": "application/json"},
