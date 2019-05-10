@@ -56,11 +56,9 @@ Module.register("pg8-faceDetect", {
     },
 
     detectedFaceMissing: function () {
-        if(this.faceInFrame) {
-            this.faceInFrame = false;
-            this.refreshesSinceLastFace = 1;
-        } else if(this.refreshesSinceLastFace === this.config.refreshesUntilMissing) {
+        if(this.refreshesSinceLastFace === this.config.refreshesUntilMissing) {
             this.refreshesSinceLastFace++;
+            this.faceInFrame = false;
             this.sendNotification('FACE_MISSING');
         } else {
             if(this.refreshesSinceLastFace <= this.config.refreshesUntilMissing) this.refreshesSinceLastFace++;
