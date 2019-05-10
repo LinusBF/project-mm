@@ -43,7 +43,7 @@ Module.register("pg8-soundStream", {
     },
 
     deleteSpeech: function (filename) {
-        this.talkToPythonServer("POST", "/delete-speech", filename, function () {
+        this.talkToPythonServer("POST", "/delete-file", filename, function () {
             if (this.readyState === 4 && this.status === 200) {
                 console.log("Deleted file: " + filename);
             }
@@ -68,7 +68,7 @@ Module.register("pg8-soundStream", {
     notificationReceived: function (notification, payload) {
         if (notification === "FACE_DETECTED") {
             this.listeningActive = true;
-            this.listenToSpeech();
+            if(!this.waitingForCloud) this.listenToSpeech();
         } else if (notification === "FACE_MISSING") {
             this.listeningActive = false;
         } else if (notification === "CLOUD_RESPONSE_SUCCESS" && payload.sender === this.name) {

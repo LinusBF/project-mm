@@ -1,14 +1,11 @@
-
 import sys
 import os
-from collections import deque
 from os import path
 import keyboard
 import pyaudio
 import wave
 import math
 import time
-import audioop
 
 CHUNK = 1024
 FORMAT = pyaudio.paInt16
@@ -40,6 +37,14 @@ def delete_speech(fn):
 
 def listen_to_speech():
     savedFile = False
+    audio2send = []
+    cur_data = ''  # current chunk  of audio data
+    response = []
+
+    print "Waiting for 'v' to be pressed"
+
+    keyboard.wait('v')
+
     p = pyaudio.PyAudio()
     stream = p.open(format=FORMAT,
                     channels=CHANNELS,
@@ -47,21 +52,11 @@ def listen_to_speech():
                     input=True,
                     frames_per_buffer=CHUNK
                     )
-    audio2send = []
-    cur_data = ''  # current chunk  of audio data
-    rel = RATE / CHUNK
-    response = []
-    slid_win = deque(maxlen = WINDOW_SIZE * rel)
-
-    print "Waiting for 'v' to be pressed"
-
-    keyboard.wait('v')
 
     print "Recording... (press 'b' to stop)"
 
     while True:
         cur_data = stream.read(CHUNK)
-        slid_win.append(math.sqrt(abs(audioop.avg(cur_data, 4))))
         audio2send.append(cur_data)
         if keyboard.is_pressed('b'):
             break;
@@ -80,5 +75,5 @@ def listen_to_speech():
     p.terminate()
     return savedFile
 
-if __name__ == "__name__":
+if __name__ == "__main__":
     print listen_to_speech()
