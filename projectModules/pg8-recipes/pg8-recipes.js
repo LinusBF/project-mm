@@ -21,6 +21,7 @@ Module.register("pg8-recipes", {
     },
 
     getDom: function () {
+        if(this.currentRecipes.length < 1) return "";
         const recipeData = this.currentRecipes[this.recipeIndex];
         const html = this.generateHtml(recipeData);
 
@@ -86,7 +87,7 @@ Module.register("pg8-recipes", {
             } else if(payload.data.action === 'RECIPE_NEXT'){
                 const root = document.querySelector('.recipe-container');
                 root.parentNode.removeChild(root);
-                this.recipeIndex === 4 ? this.recipeIndex = 0 : this.recipeIndex++;
+                this.recipeIndex === payload.data.recipes.length - 1 ? this.recipeIndex = 0 : this.recipeIndex++;
                 this.instructionIndex = 0;
                 this.updateDom();
             } else if (payload.data.action === 'RECIPE_CLOSE'){

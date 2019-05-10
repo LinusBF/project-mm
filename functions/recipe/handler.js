@@ -7,6 +7,12 @@ const cheerio = require('cheerio');
 
 const scrapeRecipes = (param) => {
     return new Promise(((resolve, reject) => {
+        resolve({
+            headers: {"Content-Type": "application/json"},
+            status: 200,
+            body: JSON.stringify({data: param})
+        })
+        /*
         getRecipeURLs(param.data.ingredients)
             .then(urls => {
                 const promiseList = [];
@@ -25,6 +31,7 @@ const scrapeRecipes = (param) => {
                 })
 
             })
+            */
     }))
 };
 
