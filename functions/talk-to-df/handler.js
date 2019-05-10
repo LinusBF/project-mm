@@ -12,20 +12,33 @@ function talkToDF(params) {
             const wavFile = new waveFile();
             wavFile.fromBase64(file);
             wavFile.fromALaw();
-            runSample(wavFile.toBuffer(), fileRate, params.GA_EMAIL, params.GA_KEY)
-                .then(res => resolve({
-                    headers: {"Content-Type": "application/json"},
-                    status: 200,
-                    body: JSON.stringify({
-                        data: {
-                            query: res.queryText,
-                            intent: res.intent.displayName,
-                            confidence: res.intentDetectionConfidence,
-                            message: res.fulfillmentText
-                        },
-                        module: "pg8-avatarConversation"
-                    }) //TODO - Change module to handle response
-                }))
+            getIntentFromSound(wavFile.toBuffer(), fileRate, params.GA_EMAIL, params.GA_KEY)
+                .then(res => {
+                    if(res.intent) {
+                        resolve({
+                            headers: {"Content-Type": "application/json"},
+                            status: 200,
+                            body: JSON.stringify({
+                                data: {
+                                    query: res.queryText,
+                                    intent: res.intent.displayName,
+                                    confidence: res.intentDetectionConfidence,
+                                    message: res.fulfillmentText
+                                },
+                                module: "pg8-avatarConversation"
+                            }) //TODO - Change module to handle response
+                        })
+                    } else {
+                        resolve({
+                            headers: {"Content-Type": "application/json"},
+                            status: 200,
+                            body: JSON.stringify({
+                                data: {res},
+                                module: "pg8-avatarConversation"
+                            })
+                        })
+                    }
+                })
                 .catch(err => reject({
                     headers: {"Content-Type": "application/json"},
                     status: 500,
@@ -41,7 +54,7 @@ function talkToDF(params) {
     });
 }
 
-function runSample(buffer, rate, gaEmail, gaKey) {
+function getIntentFromSound(buffer, rate, gaEmail, gaKey) {
     return new Promise((resolve, reject) => {
         const encoding = 'AUDIO_ENCODING_LINEAR_16';
         const sampleRateHertz = rate;
