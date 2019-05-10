@@ -23,6 +23,10 @@ Module.register("pg8-avatarConversation", {
         return wrapper;
     },
 
+    getStyles: function () {
+        return ["avatar.css"];
+    },
+
     notificationReceived: function (notification, payload) {
         if (notification === "CLOUD_RESPONSE_SUCCESS" && this.name === payload.module) {
             this.avatarSays = payload.data.message;
