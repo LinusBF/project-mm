@@ -30,7 +30,7 @@ Module.register("pg8-debugHelper", {
     registerCloudResponse: function(response) {
         this.lastCloudResponse.intent = response.data.intent;
         this.lastCloudResponse.query = response.data.query;
-        this.lastCloudResponse.conf = response.data.confidence;
+        this.lastCloudResponse.conf = response.data.confidence.toString();
         this.lastCloudResponse.msg = response.data.message;
         this.lastCloudResponse.module = response.module;
         this.lastCloudResponse.trigger = response.sender;
@@ -43,9 +43,11 @@ Module.register("pg8-debugHelper", {
         wrapper.className = "debug-wrapper";
 
         const entries = Object.entries(this.lastCloudResponse);
-        for (const entry in entries) {
+        const that = this;
+
+        entries.forEach(function(entry) {
             wrapper.appendChild(this.getPropertyDom(...entry));
-        }
+        });
 
         return wrapper;
     },
@@ -55,7 +57,7 @@ Module.register("pg8-debugHelper", {
         container.className = "debug-container";
 
         const name = document.createElement("p");
-        name.innerText = property + ": " + value.slice(0, 25);
+        name.innerText = property + ": " + value.slice(0, 15);
         container.appendChild(name);
 
         return container;
