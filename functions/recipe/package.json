@@ -1,0 +1,24 @@
+{
+  "name": "recipe",
+  "version": "1.0.0",
+  "description": "Sample OpenWhisk NodeJS serverless framework service.",
+  "main": "handler.js",
+  "scripts": {
+    "deploy": "npm run retarded:fix && serverless deploy -v",
+    "retarded:fix": "npm rebuild grpc --target=6.1.0 --target_arch=x64 --target_platform=linux --target_libc=glibc"
+  },
+  "keywords": [
+    "serverless",
+    "openwhisk"
+  ],
+  "devDependencies": {
+    "serverless-openwhisk": ">=0.13.0"
+  },
+  "dependencies": {
+    "axios": "latest",
+    "cheerio": "^1.0.0-rc.3",
+    "objects-to-csv": "^1.2.1",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.4"
+  }
+}
