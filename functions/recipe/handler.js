@@ -7,12 +7,6 @@ const cheerio = require('cheerio');
 
 const scrapeRecipes = (param) => {
     return new Promise(((resolve, reject) => {
-        resolve({
-            headers: {"Content-Type": "application/json"},
-            status: 200,
-            body: JSON.stringify({data: param})
-        })
-        /*
         getRecipeURLs(param.data.ingredients)
             .then(urls => {
                 const promiseList = [];
@@ -31,14 +25,13 @@ const scrapeRecipes = (param) => {
                 })
 
             })
-            */
     }))
 };
 
 const getRecipeURLs = (ingredientList) => {
     return new Promise((resolve, reject) => {
         const ingredientsUrl = ingredientList.join(',');
-        axios.get(`https://www.food2fork.com/api/search?key=8c4c0167f29a3056495f6d125a67eed4&q=${ingredientsUrl}&page=5`)
+        axios.get(`https://www.food2fork.com/api/search?key=8c4c0167f29a3056495f6d125a67eed4&q=${ingredientsUrl}&count=5`)
             .then(response => {
                 const recipeURLs = [];
                 response.data.recipes.forEach(element => {
