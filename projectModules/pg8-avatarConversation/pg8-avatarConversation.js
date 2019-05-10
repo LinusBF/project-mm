@@ -9,7 +9,7 @@
  */
 
 Module.register("pg8-avatarConversation", {
-    avatarSays : ""
+    avatarSays : "" ,
     start: function () {
         console.log("Starting module: " + this.name);
         this.avatarSays = "Hi";
@@ -23,7 +23,7 @@ Module.register("pg8-avatarConversation", {
 
     notificationReceived: function (notification, payload) {
         if (notification === "CLOUD_RESPONSE_SUCCESS" && this.name === payload.module){
-            this.avatarSays = payload.data;
+            this.avatarSays = payload.data.message;
             this.updateDom();
         }
     },
