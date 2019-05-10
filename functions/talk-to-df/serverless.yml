@@ -28,6 +28,9 @@ functions:
     parameters:
       GA_KEY: ${self:custom.environment.GA_KEY}
       GA_EMAIL: ${self:custom.environment.GA_EMAIL}
+      IBM_URL: ${self:custom.environment.IBM_URL}
+      IBM_USER: ${self:custom.environment.IBM_USER}
+      IBM_PASS: ${self:custom.environment.IBM_PASS}
     annotations:
       web-export: true
 
