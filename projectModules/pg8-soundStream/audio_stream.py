@@ -31,9 +31,12 @@ def save_speech(data, p, rate, channels):
     return filename + '.wav'
 
 def delete_speech(fn):
-    filedir = path.dirname(path.abspath(__file__))
-    os.remove(path.join(filedir, fn))
-    return True
+    try:
+        filedir = path.dirname(path.abspath(__file__))
+        os.remove(path.join(filedir, fn))
+        return True
+    except:
+        return False
 
 def listen_to_speech():
     savedFile = False
@@ -41,7 +44,7 @@ def listen_to_speech():
     cur_data = ''  # current chunk  of audio data
     response = []
 
-    print "Waiting for 'v' to be pressed"
+ #   print "Waiting for 'v' to be pressed"
 
     keyboard.wait('v')
 
@@ -53,7 +56,7 @@ def listen_to_speech():
                     frames_per_buffer=CHUNK
                     )
 
-    print "Recording... (press 'b' to stop)"
+    #   print "Recording... (press 'b' to stop)"
 
     while True:
         cur_data = stream.read(CHUNK)
@@ -61,12 +64,12 @@ def listen_to_speech():
         if keyboard.is_pressed('b'):
             break;
 
-    print "Recording stopped, saving file..."
+    #print "Recording stopped, saving file..."
 
     filename = save_speech(audio2send, p, RATE, CHANNELS)
 
-    print "File saved"
-    print filename
+    # print "File saved"
+    #print filename
 
     savedFile = filename
 
@@ -76,4 +79,4 @@ def listen_to_speech():
     return savedFile
 
 if __name__ == "__main__":
-    print listen_to_speech()
+    listen_to_speech()
