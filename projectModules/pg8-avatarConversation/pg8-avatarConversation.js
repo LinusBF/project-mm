@@ -19,12 +19,12 @@ Module.register("pg8-avatarConversation", {
     getDom: function () {
         var wrapper = document.createElement("div");
         wrapper.className = 'avatarConversation';
-        wrapper.innerHTML = this.avatarSays;
+        wrapper.innerText = this.avatarSays;
         return wrapper;
     },
 
     getStyles: function () {
-        return ["avatar.css"];
+        return ["conversationText.css"];
     },
 
     notificationReceived: function (notification, payload) {
