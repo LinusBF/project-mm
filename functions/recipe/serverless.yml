@@ -24,10 +24,9 @@ provider:
 
 functions:
   scrape-recipes:
-    handler: handler.scrapeRecipes
+    handler: handler.getRecipes
     parameters:
-      GA_KEY: ${self:custom.environment.GA_KEY}
-      GA_EMAIL: ${self:custom.environment.GA_EMAIL}
+      API_KEY: ${self:custom.environment.API_KEY}
     annotations:
       web-export: true
 

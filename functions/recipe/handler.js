@@ -1,85 +1,41 @@
 'use strict';
 
+//params.API_KEY;
+
+
 const axios = require('axios');
 const rp = require('request-promise');
 const cheerio = require('cheerio');
 
-
-const scrapeRecipes = (param) => {
-    return new Promise(((resolve, reject) => {
-        getRecipeURLs(param.data.ingredients)
-            .then(urls => {
-                const promiseList = [];
-                urls.forEach(element => {
-                    promiseList.push(scrapeURL(element));
-                });
-                Promise.all(promiseList)
-                    .then(recipes => {
-                        resolve({
-                            headers: {"Content-Type": "application/json"},
-                            status: 200,
-                            body: JSON.stringify({data: recipes})
-                        })
-                    }).catch(error => {
-                        console.log(error);
-                })
-
-            })
-    }))
-};
-
-const getRecipeURLs = (ingredientList) => {
+const getRecipes = (params) => {
     return new Promise((resolve, reject) => {
-        const ingredientsUrl = ingredientList.join(',');
-        axios.get(`https://www.food2fork.com/api/search?key=8c4c0167f29a3056495f6d125a67eed4&q=${ingredientsUrl}&count=5`)
+        const ingredParams = params.ingredients.join[','];
+        const API_QUERY = "https://api.edamam.com/search?q=" + ingredParams + "&app_id=" + API_ID + "&app_key=" + API_KEY + "&from=0&to=4";
+        axios.get(API_QUERY)
             .then(response => {
-                const recipeURLs = [];
-                response.data.recipes.forEach(element => {
-                    recipeURLs.push(element.f2f_url)
-                });
-                resolve(recipeURLs);
+                //console.log(response.data.hits[0]);
+                const recipeList = extractList(response.data.hits);
+                resolve(recipeList);
             })
             .catch(error => {
-                reject(console.log(error));
-            });
+                reject(error)
+            })
     })
+
 };
 
-const scrapeURL = (url) => {
-    return new Promise(((resolve, reject) => {
-        rp(url)
-            .then(html => {
-                const $ = cheerio.load(html);
-                const title = extractTitle($);
-                const img = extractImage($);
-                const ingredients = extractIngredients($);
-                resolve({
-                    title: title,
-                    img: img,
-                    ingredients: ingredients
-                })
-            })
-            .catch(error => {
-                reject(console.log(error));
-            })
-    }))
-};
+const extractList = (list) => {
+    const responseList = [];
+    list.forEach(hits => {
+        responseList.push({
+            title: hits.recipe.label,
+            img: hits.recipe.image,
+            ingredients: hits.recipe.ingredientLines
+        })
+    })
+    console.log(responseList);
+}
 
-const extractTitle = ($) => {
-    return $('.recipe-title').text();
-};
 
-const extractImage = ($) => {
-    return $('.recipe-image').attr('src');
-};
+exports.getRecipes = getrecipes;
 
-const extractIngredients = ($) => {
-    const list = [];
-    $('.about-container > ul').find('li')
-        .each((index, element) => {
-            list.push(cheerio(element).text());
-        });
-    return list;
-};
-
-exports.scrapeRecipes = scrapeRecipes;
