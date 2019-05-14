@@ -44,8 +44,8 @@ Module.register("pg8-recipes", {
             `;
 
         return wrapper;
-    }
-    ,
+    },
+
     dummystepsHtml: function (){
         const dummyArray = ['Season beef with a pinch of salt and black pepper. Heat vegetable oil in a heavy pot over high heat. Cook and stir beef in hot oil until browned, 5 to 8 minutes.', 'Stir garlic, vinegar, oregano, 1 1/2 teaspoons salt, thyme, rosemary, 1 teaspoon black pepper, bay leaf, and red pepper flakes into beef. Pour enough chicken broth into beef mixture to cover the meat by 1 inch and bring to a simmer.', 'Cover pot with a lid, reduce heat to low, and simmer until meat is fork-tender, 1 to 1 1/2 hours.', 'Transfer meat with a strainer or slotted spoon to a separate pot; pour about 1/4 cup of meat broth into pot. Use a wooden spoon to gently break meat into smaller chunks. Cover pot with a lid or aluminum foil and keep warm.', 'Skim excess grease from top of broth remaining in the first pot; season with salt and pepper to taste. Cover pot with a lid or aluminum foil and keep broth warm.' ];
         const wrapper = document.createElement('div');
@@ -62,27 +62,44 @@ Module.register("pg8-recipes", {
         instructions.push(`</ol>`);
         return instructions.join("");
 
-    }
-    ,
+    },
+
+    changeActiveState: function(newState) {
+        if(newState !== this.stateActive){
+            this.stateActive = newState;
+            this.notifyStateChange(newState);
+        }
+    },
+
+    notifyStateChange: function(newState) {
+        const message = (newState ? "RECIPE_OPENED" : "RECIPE_CLOSED");
+        this.sendNotification(message);
+    },
+
+    changeRecipe: function(){
+        this.recipeIndex === data.recipes.length - 1 ? this.recipeIndex = 0 : this.recipeIndex++;
+    },
 
     notificationReceived: function (notification, payload) {
         if (notification === 'CLOUD_RESPONSE_SUCCESS' && payload.module === this.name) {
             const data = payload.data.message;
             if (data.action === 'RECIPE_SHOW'){
-                this.stateActive = true;
-                data.recipes.forEach(element => {this.currentRecipes.push(element)})
+                this.currentRecipes = [];
+                data.recipes.forEach(element => {this.currentRecipes.push(element)});
+                this.changeActiveState(true);
                 this.updateDom();
 
-            } else if(data.action === 'INSTRUCTION_NEXT'){
+            } else if(data.action === 'INSTRUCTION_CHANGE'){
                 this.instructionIndex++;
                 this.updateDom();
 
-            } else if(data.action === 'RECIPE_NEXT'){
+            } else if(data.action === 'RECIPE_CHANGE'){
+                this.changeRecipe(data.change);
                 this.recipeIndex === data.recipes.length - 1 ? this.recipeIndex = 0 : this.recipeIndex++;
                 this.instructionIndex = 0;
                 this.updateDom();
             } else if (data.action === 'RECIPE_CLOSE'){
-                this.stateActive = false;
+                this.changeActiveState(false);
                 this.updateDom();
             }
         }
