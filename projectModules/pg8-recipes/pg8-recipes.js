@@ -7,10 +7,17 @@
  * MIT Licensed.
  */
 Module.register("pg8-recipes", {
-    stateActive: true,
+    stateActive: false,
     recipeIndex: 0,
     instructionIndex: 0,
     currentRecipes: [],
+    dummySteps: [],
+
+    start: function() {
+        console.log("Starting module " + this.name);
+        this.dummySteps = ['Season beef with a pinch of salt and black pepper. Heat vegetable oil in a heavy pot over high heat. Cook and stir beef in hot oil until browned, 5 to 8 minutes.', 'Stir garlic, vinegar, oregano, 1 1/2 teaspoons salt, thyme, rosemary, 1 teaspoon black pepper, bay leaf, and red pepper flakes into beef. Pour enough chicken broth into beef mixture to cover the meat by 1 inch and bring to a simmer.', 'Cover pot with a lid, reduce heat to low, and simmer until meat is fork-tender, 1 to 1 1/2 hours.', 'Transfer meat with a strainer or slotted spoon to a separate pot; pour about 1/4 cup of meat broth into pot. Use a wooden spoon to gently break meat into smaller chunks. Cover pot with a lid or aluminum foil and keep warm.', 'Skim excess grease from top of broth remaining in the first pot; season with salt and pepper to taste. Cover pot with a lid or aluminum foil and keep broth warm.' ];
+        this.stateActive = false;
+    },
 
     getStyles: function () {
         return ["recipes.css"];
@@ -47,17 +54,16 @@ Module.register("pg8-recipes", {
     },
 
     dummystepsHtml: function (){
-        const dummyArray = ['Season beef with a pinch of salt and black pepper. Heat vegetable oil in a heavy pot over high heat. Cook and stir beef in hot oil until browned, 5 to 8 minutes.', 'Stir garlic, vinegar, oregano, 1 1/2 teaspoons salt, thyme, rosemary, 1 teaspoon black pepper, bay leaf, and red pepper flakes into beef. Pour enough chicken broth into beef mixture to cover the meat by 1 inch and bring to a simmer.', 'Cover pot with a lid, reduce heat to low, and simmer until meat is fork-tender, 1 to 1 1/2 hours.', 'Transfer meat with a strainer or slotted spoon to a separate pot; pour about 1/4 cup of meat broth into pot. Use a wooden spoon to gently break meat into smaller chunks. Cover pot with a lid or aluminum foil and keep warm.', 'Skim excess grease from top of broth remaining in the first pot; season with salt and pepper to taste. Cover pot with a lid or aluminum foil and keep broth warm.' ];
         const wrapper = document.createElement('div');
         wrapper.className = 'instructions';
         const instructions = [];
         instructions.push(`<ol>`);
 
         // Always show 3 items or less. Starting at "Instruction index"
-        const numOfItemsLeft = dummyArray.length-this.instructionIndex;
+        const numOfItemsLeft = this.dummySteps.length-this.instructionIndex;
         const numToShow = (numOfItemsLeft < 3 ? numOfItemsLeft : 3);
         for (i = this.instructionIndex; i < numToShow; i++){
-            instructions.push(`<li>${dummyArray[i]}</li>`);
+            instructions.push(`<li>${this.dummySteps[i]}</li>`);
         }
         instructions.push(`</ol>`);
         return instructions.join("");
@@ -76,8 +82,25 @@ Module.register("pg8-recipes", {
         this.sendNotification(message);
     },
 
-    changeRecipe: function(){
-        this.recipeIndex === data.recipes.length - 1 ? this.recipeIndex = 0 : this.recipeIndex++;
+    changeRecipe: function(change){
+        if(change === "NEXT"){
+            this.recipeIndex === this.currentRecipes.length - 1 ? this.recipeIndex = 0 : this.recipeIndex++;
+            this.instructionIndex = 0;
+        } else if(change === "PREVIOUS"){
+            this.recipeIndex === 0 ? this.recipeIndex = this.currentRecipes.length - 1 : this.recipeIndex--;
+            this.instructionIndex = 0;
+        }
+
+    },
+
+    changeInstruction: function(change){
+        if(change === "NEXT"){
+            this.instructionIndex === this.dummySteps.length - 1 ? this.instructionIndex = 0 : this.instructionIndex++;
+        } else if(change === "PREVIOUS"){
+
+            this.instructionIndex === 0 ? this.instructionIndex = this.dummySteps.length - 1 : this.instructionIndex--;
+        }
+
     },
 
     notificationReceived: function (notification, payload) {
@@ -90,13 +113,11 @@ Module.register("pg8-recipes", {
                 this.updateDom();
 
             } else if(data.action === 'INSTRUCTION_CHANGE'){
-                this.instructionIndex++;
+                this.changeInstruction(data.change);
                 this.updateDom();
 
             } else if(data.action === 'RECIPE_CHANGE'){
                 this.changeRecipe(data.change);
-                this.recipeIndex === data.recipes.length - 1 ? this.recipeIndex = 0 : this.recipeIndex++;
-                this.instructionIndex = 0;
                 this.updateDom();
             } else if (data.action === 'RECIPE_CLOSE'){
                 this.changeActiveState(false);
