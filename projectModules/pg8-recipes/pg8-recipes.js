@@ -16,10 +16,6 @@ Module.register("pg8-recipes", {
         return ["recipes.css"];
     },
 
-    updateDom: function() {
-        document.getElementById('container').appendChild(this.getDom());
-    },
-
     getDom: function () {
         if(!this.stateActive || this.currentRecipes.length < 1) return "";
         const recipeData = this.currentRecipes[this.recipeIndex];
