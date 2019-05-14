@@ -91,8 +91,7 @@ function handleIntent(dfResponse) {
     return new Promise((resolve, reject) => {
         const intent = dfResponse.intent.displayName;
         const sessionId = dfResponse.sessionId;
-        if (intent === "Show recipe") {
-
+        if (intent === "Show recipe" || intent === "Show new recipe") {
             const ingredients = structProtoToJson(dfResponse.parameters).ingredient;
             runRecipeFunc(ingredients)
                 .then(recipes => {
