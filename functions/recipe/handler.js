@@ -1,24 +1,27 @@
 'use strict';
 
-//params.API_KEY;
-
-
 const axios = require('axios');
-const rp = require('request-promise');
-const cheerio = require('cheerio');
 
 const getRecipes = (params) => {
     return new Promise((resolve, reject) => {
-        const ingredParams = params.ingredients.join[','];
-        const API_QUERY = "https://api.edamam.com/search?q=" + ingredParams + "&app_id=" + API_ID + "&app_key=" + API_KEY + "&from=0&to=4";
+        const ingredientParams = params.data.ingredients.join(',');
+        const API_QUERY = "https://api.edamam.com/search?" +
+                          "q=" + ingredientParams +
+                          "&app_id=" + params.API_ID +
+                          "&app_key=" + params.API_KEY +
+                          "&from=0&to=5";
+
         axios.get(API_QUERY)
             .then(response => {
-                //console.log(response.data.hits[0]);
                 const recipeList = extractList(response.data.hits);
-                resolve(recipeList);
+                resolve({
+                    headers: {"Content-Type": "application/json"},
+                    status: 200,
+                    body: JSON.stringify({data: recipeList})
+                })
             })
             .catch(error => {
-                reject(error)
+                reject(error);
             })
     })
 
@@ -32,10 +35,9 @@ const extractList = (list) => {
             img: hits.recipe.image,
             ingredients: hits.recipe.ingredientLines
         })
-    })
-    console.log(responseList);
-}
+    });
+    return responseList;
+};
 
-
-exports.getRecipes = getrecipes;
+exports.getRecipes = getRecipes;
 
