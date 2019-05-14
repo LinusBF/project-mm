@@ -61,9 +61,9 @@ Module.register("pg8-recipes", {
         instructions.push(`<ol>`);
 
         // Always show 3 items or less. Starting at "Instruction index"
-        const numOfItemsLeft = this.dummySteps.length-this.instructionIndex;
+        const numOfItemsLeft = this.dummySteps.length - this.instructionIndex;
         const numToShow = (numOfItemsLeft < 3 ? numOfItemsLeft : 3);
-        for (let i = this.instructionIndex; i < numToShow; i++){
+        for (let i = this.instructionIndex; i < (numToShow + this.instructionIndex); i++){
             instructions.push(`<li>${this.dummySteps[i]}</li>`);
         }
         instructions.push(`</ol>`);
