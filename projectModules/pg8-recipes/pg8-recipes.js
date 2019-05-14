@@ -26,6 +26,7 @@ Module.register("pg8-recipes", {
     getDom: function () {
         if(!this.stateActive || this.currentRecipes.length < 1) return "";
         const recipeData = this.currentRecipes[this.recipeIndex];
+        if(recipeData.length < 1) return `<div>Couldn't find any recipes with those ingredients, sorry!</div>`;
         return this.generateHtml(recipeData);
     },
 
