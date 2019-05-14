@@ -21,11 +21,9 @@ Module.register("pg8-recipes", {
     },
 
     getDom: function () {
-        if(this.currentRecipes.length < 1) return "";
+        if(!this.stateActive || this.currentRecipes.length < 1) return "";
         const recipeData = this.currentRecipes[this.recipeIndex];
-        const html = this.generateHtml(recipeData);
-
-        return html;
+        return this.generateHtml(recipeData);
     },
 
     generateHtml: function (recipeData) {
@@ -73,28 +71,23 @@ Module.register("pg8-recipes", {
 
     notificationReceived: function (notification, payload) {
         if (notification === 'CLOUD_RESPONSE_SUCCESS' && payload.module === this.name) {
-            if (payload.data.action === 'RECIPE_SHOW'){
+            const data = payload.data.message;
+            if (data.action === 'RECIPE_SHOW'){
                 this.stateActive = true;
-                payload.data.recipes.forEach(element => {this.currentRecipes.push(element)})
+                data.recipes.forEach(element => {this.currentRecipes.push(element)})
                 this.updateDom();
 
-            } else if(payload.data.action === 'INSTRUCTION_NEXT'){
-                const root = document.querySelector('.recipe-container');
-                root.parentNode.removeChild(root);
+            } else if(data.action === 'INSTRUCTION_NEXT'){
                 this.instructionIndex++;
                 this.updateDom();
 
-            } else if(payload.data.action === 'RECIPE_NEXT'){
-                const root = document.querySelector('.recipe-container');
-                root.parentNode.removeChild(root);
-                this.recipeIndex === payload.data.recipes.length - 1 ? this.recipeIndex = 0 : this.recipeIndex++;
+            } else if(data.action === 'RECIPE_NEXT'){
+                this.recipeIndex === data.recipes.length - 1 ? this.recipeIndex = 0 : this.recipeIndex++;
                 this.instructionIndex = 0;
                 this.updateDom();
-            } else if (payload.data.action === 'RECIPE_CLOSE'){
-                const root = document.querySelector('.recipe-container');
-                root.parentNode.removeChild(root);
-
+            } else if (data.action === 'RECIPE_CLOSE'){
                 this.stateActive = false;
+                this.updateDom();
             }
         }
     }
