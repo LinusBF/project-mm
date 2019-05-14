@@ -16,10 +16,12 @@ Module.register("pg8-cloudController", {
     },
 
     waitingForResponse: false,
+    currentSession: "",
 
     // Define start sequence.
     start: function () {
         console.log("Starting module: " + this.name);
+        this.currentSession = "";
     },
 
     makeRequest: function (method, path, sender, data) {
@@ -36,7 +38,7 @@ Module.register("pg8-cloudController", {
         xhttp.open(method, this.config.endpoint + path + "?blocking=true", true);
         if(method === "POST") xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
         xhttp.setRequestHeader("Authorization", "Basic " + btoa(this.config.apiKey));
-        xhttp.send(JSON.stringify({module: sender, data: data}));
+        xhttp.send(JSON.stringify({module: sender, data: data, session: this.currentSession}));
     },
 
     handleResponse: function(status, data, sender){
@@ -48,6 +50,7 @@ Module.register("pg8-cloudController", {
         let response = data;
         if(data.response && data.response.result && data.response.result.body) { //Accessing dumb IBM Cloud action response wrapper
             response = JSON.parse(data.response.result.body);
+            this.currentSession = response.session;
             console.log("Cloud function responded with data: ", response);
         }
 

@@ -4,23 +4,22 @@ const uuid = require('uuid');
 const dialogFlow = require("dialogflow");
 const waveFile = require("wavefile");
 const axios = require("axios");
-
-let IBM_USER = "";
-let IBM_PASS = "";
-let IBM_URL = "";
+const {jsonToStructProto, structProtoToJson} = require("./protoDF");
 
 function talkToDF(params) {
     return new Promise((resolve, reject) => {
         const file = params.data.soundFile || null;
         const fileRate = params.data.fileRate || null;
-        IBM_USER = params.IBM_USER;
-        IBM_PASS = params.IBM_PASS;
-        IBM_URL = params.IBM_URL;
+        const sessionId = params.session || null;
+        process.env.IBM_USER = params.IBM_USER;
+        process.env.IBM_PASS = params.IBM_PASS;
+        process.env.IBM_URL = params.IBM_URL;
+
         if (file) {
             const wavFile = new waveFile();
             wavFile.fromBase64(file);
             wavFile.fromALaw();
-            getIntentFromSound(wavFile.toBuffer(), fileRate, params.GA_EMAIL, params.GA_KEY)
+            getIntentFromSound(wavFile.toBuffer(), fileRate, sessionId, params.GA_EMAIL, params.GA_KEY)
                 .then(handleIntent)
                 .then(result => {
                     resolve({
@@ -37,20 +36,22 @@ function talkToDF(params) {
         } else {
             resolve({
                 headers: {"Content-Type": "application/json"},
-                status: 200,
+                status: 400,
                 body: JSON.stringify({data: `No File supplied`})
             });
         }
     });
 }
 
-function getIntentFromSound(buffer, rate, gaEmail, gaKey) {
+function getIntentFromSound(buffer, rate, sessionId, gaEmail, gaKey) {
     return new Promise((resolve, reject) => {
         const encoding = 'AUDIO_ENCODING_LINEAR_16';
         const sampleRateHertz = rate;
         const languageCode = "en-US";
         // A unique identifier for the given session
-        const sessionId = uuid.v4();
+        if(!sessionId){
+            sessionId = uuid.v4();
+        }
 
         // Create a new session
         const config = {
@@ -78,58 +79,82 @@ function getIntentFromSound(buffer, rate, gaEmail, gaKey) {
 
         sessionClient.detectIntent(request)
             .then(response => {
-                resolve(response[0].queryResult);
+                const dfResponse = response[0].queryResult;
+                dfResponse.sessionId = sessionId; //Adding session ID at object root level
+                resolve(dfResponse);
             })
             .catch(err => reject(err));
     });
 }
 
 function handleIntent(dfResponse) {
-    return new Promise(async (resolve, reject) => {
-        if (dfResponse.intent.displayName === "Show recipe") {
-            const recipeRes = await runRecipeFunc(["beef", "onion"]);
-            resolve({
-                data: {
-                    query: dfResponse.queryText,
-                    intent: dfResponse.intent.displayName,
-                    confidence: dfResponse.intentDetectionConfidence,
-                    message: {
+    return new Promise((resolve, reject) => {
+        const intent = dfResponse.intent.displayName;
+        const sessionId = dfResponse.sessionId;
+        if (intent === "Show recipe") {
+
+            const ingredients = structProtoToJson(dfResponse.parameters).ingredient;
+            runRecipeFunc(ingredients)
+                .then(recipes => {
+                    const responseMessage = {
                         action: "RECIPE_SHOW",
-                        recipes: recipeRes.data,
-                    }
-                },
-                module: "pg8-recipes"
-            })
+                        recipes: recipes,
+                    };
+
+                    resolve(packageResponse(dfResponse, sessionId, responseMessage, "pg8-recipes"))
+                });
+        } else if(intent === "Change recipe") {
+            const change = structProtoToJson(dfResponse.parameters).Change;
+            resolve(packageResponse(dfResponse, sessionId, {action: "RECIPE_CHANGE", change: change}, "pg8-recipes"))
+        } else if(intent === "Change instruction") {
+            const change = structProtoToJson(dfResponse.parameters).Change;
+            resolve(packageResponse(dfResponse, sessionId, {action: "INSTRUCTION_CHANGE", change: change}, "pg8-recipes"))
+        } else if(intent === "Close recipe") {
+            resolve(packageResponse(dfResponse, sessionId, {action: "RECIPE_CLOSE"}, "pg8-recipes"))
         } else {
-            resolve({
-                data: {
-                    query: dfResponse.queryText,
-                    intent: dfResponse.intent.displayName,
-                    confidence: dfResponse.intentDetectionConfidence,
-                    message: dfResponse.fulfillmentText
-                },
-                module: "pg8-avatarConversation"
-            })
+            const intentResponse = dfResponse.fulfillmentText;
+            resolve(packageResponse(dfResponse, sessionId, intentResponse, "pg8-avatarConversation"))
         }
     });
 }
 
-async function runRecipeFunc(ingredients) {
-    const res = await axios.get({
-        method: "POST",
-        url: IBM_URL,
-        auth: {
-            username: IBM_USER,
-            password: IBM_PASS
-        },
-        data: {
+function runRecipeFunc(ingredients) {
+    return new Promise(resolve => {
+        axios.request({
+            method: "POST",
+            url: process.env.IBM_URL,
+            auth: {
+                username: process.env.IBM_USER,
+                password: process.env.IBM_PASS
+            },
             data: {
-                ingredients: ingredients
+                data: {
+                    ingredients: ingredients
+                }
             }
-        }
+        })
+            .then(res => {
+                let response = res;
+                //Accessing dumb IBM Cloud action response wrapper
+                if(res.data.response && res.data.response.result && res.data.response.result.body) {
+                    response = JSON.parse(res.data.response.result.body);
+                }
+                resolve(response.data);
+            });
     });
+}
 
-    return res.data;
+function packageResponse(dfResponse, sessionId, message, module) {
+    return {
+        data: {
+            query: dfResponse.queryText,
+            intent: dfResponse.intent.displayName,
+            confidence: dfResponse.intentDetectionConfidence,
+            message: message
+        },
+        session: sessionId,
+        module: module
+    }
 }
 
 exports.talkToDF = talkToDF;
