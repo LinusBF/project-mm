@@ -23,10 +23,11 @@ provider:
   runtime: nodejs:6
 
 functions:
-  scrape-recipes:
+  get-recipes:
     handler: handler.getRecipes
     parameters:
       API_KEY: ${self:custom.environment.API_KEY}
+      API_ID: ${self:custom.environment.API_ID}
     annotations:
       web-export: true
 
