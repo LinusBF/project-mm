@@ -5,7 +5,8 @@
   "main": "handler.js",
   "scripts": {
     "deploy": "npm run retarded:fix && serverless deploy -v",
-    "retarded:fix": "npm rebuild grpc --target=6.1.0 --target_arch=x64 --target_platform=linux --target_libc=glibc"
+    "retarded:fix": "npm rebuild grpc --target=6.1.0 --target_arch=x64 --target_platform=linux --target_libc=glibc",
+    "test": "jest"
   },
   "keywords": [
     "serverless",
