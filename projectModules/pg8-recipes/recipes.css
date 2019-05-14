@@ -23,11 +23,13 @@ body {
 .recipe-container{
     display: flex;
     justify-content: space-evenly;
+    position: relative;
 }
 
 #heading-ingredients{
     width: 30%;
     margin-right: 10px;
+    max-height: 100%;
 }
 
 #heading {
@@ -49,7 +51,6 @@ body {
 
 #ingredients ul li{
     list-style: none;
-    margin-bottom: 7px;
 }
 
 #ingredients ul li::before{
