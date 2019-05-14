@@ -44,6 +44,7 @@ Module.register("pg8-avatar", {
     },
 
     openEyes: function () {
+        if(!this.isActive) return;
         this.affectEyes('eye-open', true);
         const that  = this;
         setTimeout(function() {
@@ -54,6 +55,7 @@ Module.register("pg8-avatar", {
     },
 
     closeEyes: function () {
+        if(!this.isActive) return;
         this.affectEyes('eye-close', true);
         const that  = this;
         setTimeout(function() {
@@ -110,8 +112,8 @@ Module.register("pg8-avatar", {
             this.faceInFrame = false;
             this.closeEyes();
         } else if(notification === 'RECIPE_OPENED') {
-            this.isActive = false;
             if(this.faceInFrame) this.closeEyes();
+            this.isActive = false;
         } else if(notification === 'RECIPE_CLOSED') {
             this.isActive = true;
             if(this.faceInFrame) this.openEyes();

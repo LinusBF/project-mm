@@ -31,8 +31,9 @@ Module.register("pg8-recipes", {
 
     generateHtml: function (recipeData) {
         const ingredients = [];
+        const ingredientsToShow = recipeData.ingredients.slice(0, 10);
         ingredients.push(`<ul>`);
-        recipeData.ingredients.map(e => {ingredients.push(`<li>${e}</li>`)});
+        ingredientsToShow.map(e => {ingredients.push(`<li>${e}</li>`)});
         ingredients.push(`</ul>`);
         const dummySteps = this.dummystepsHtml();
 
@@ -62,7 +63,7 @@ Module.register("pg8-recipes", {
         // Always show 3 items or less. Starting at "Instruction index"
         const numOfItemsLeft = this.dummySteps.length-this.instructionIndex;
         const numToShow = (numOfItemsLeft < 3 ? numOfItemsLeft : 3);
-        for (i = this.instructionIndex; i < numToShow; i++){
+        for (let i = this.instructionIndex; i < numToShow; i++){
             instructions.push(`<li>${this.dummySteps[i]}</li>`);
         }
         instructions.push(`</ol>`);
