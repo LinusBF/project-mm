@@ -254,7 +254,7 @@ Module.register("pg8-weather",{
 
 			var feelsLike = document.createElement("span");
 			feelsLike.className = "dimmed";
-			feelsLike.innerHTML = this.translate("FUCKOFF") + " " + this.feelsLike + degreeLabel;
+			feelsLike.innerHTML = this.translate("Feels like") + " " + this.feelsLike + degreeLabel;
 			small.appendChild(feelsLike);
 
 			wrapper.appendChild(small);
