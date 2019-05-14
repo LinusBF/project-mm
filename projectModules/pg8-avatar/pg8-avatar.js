@@ -15,9 +15,11 @@ Module.register("pg8-avatar", {
     },
 
     faceInFrame: false,
+    isActive: false,
 
     // Define start sequence.
     start: function () {
+        this.isActive = true;
         console.log("Starting module: " + this.name);
     },
 
@@ -31,12 +33,12 @@ Module.register("pg8-avatar", {
     },
 
     blink: function () {
-        if (!this.faceInFrame) return;
+        if (!this.isActive || !this.faceInFrame) return;
         this.affectEyes('eye-blink', true);
 
         const that = this;
         setTimeout(function () {
-            if (!that.faceInFrame) return;
+            if (!that.isActive || !that.faceInFrame) return;
             that.affectEyes('eye-blink', false);
         }, 1000);
     },
@@ -89,7 +91,7 @@ Module.register("pg8-avatar", {
     },
 
     startBlinkingLoop: function () {
-        if(!this.faceInFrame) return;
+        if(!this.isActive || !this.faceInFrame) return;
         var nextLoad = this.config.blinkInterval;
 
         var self = this;
@@ -107,6 +109,12 @@ Module.register("pg8-avatar", {
         } else if(notification === 'FACE_MISSING') {
             this.faceInFrame = false;
             this.closeEyes();
+        } else if(notification === 'RECIPE_OPENED') {
+            this.isActive = false;
+            if(this.faceInFrame) this.closeEyes();
+        } else if(notification === 'RECIPE_CLOSED') {
+            this.isActive = true;
+            if(this.faceInFrame) this.openEyes();
         }
     },
 });
