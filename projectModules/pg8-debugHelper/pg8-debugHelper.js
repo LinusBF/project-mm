@@ -31,7 +31,7 @@ Module.register("pg8-debugHelper", {
         this.lastCloudResponse.intent = response.data.intent;
         this.lastCloudResponse.query = response.data.query;
         this.lastCloudResponse.conf = response.data.confidence.toString();
-        this.lastCloudResponse.msg = response.data.message;
+        this.lastCloudResponse.msg = response.data.message.toString();
         this.lastCloudResponse.module = response.module;
         this.lastCloudResponse.trigger = response.sender;
         this.updateDom();
@@ -46,7 +46,7 @@ Module.register("pg8-debugHelper", {
         const that = this;
 
         entries.forEach(function(entry) {
-            wrapper.appendChild(this.getPropertyDom(...entry));
+            wrapper.appendChild(that.getPropertyDom(...entry));
         });
 
         return wrapper;

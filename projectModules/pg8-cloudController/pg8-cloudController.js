@@ -46,8 +46,9 @@ Module.register("pg8-cloudController", {
         console.log("Handling cloud response:\nStatus: ", status, "\nSender: ", sender, "\nData: ", data);
 
         let response = data;
-        if(data.response.result.body) { //Accessing dumb IBM Cloud action response wrapper
+        if(data.response && data.response.result && data.response.result.body) { //Accessing dumb IBM Cloud action response wrapper
             response = JSON.parse(data.response.result.body);
+            console.log("Cloud function responded with data: ", response);
         }
 
         if(status === 200){
