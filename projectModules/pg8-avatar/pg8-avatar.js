@@ -116,7 +116,10 @@ Module.register("pg8-avatar", {
             this.isActive = false;
         } else if(notification === 'RECIPE_CLOSED') {
             this.isActive = true;
-            if(this.faceInFrame) this.openEyes();
+            if(this.faceInFrame){
+                this.openEyes();
+                this.startBlinkingLoop();
+            }
         }
     },
 });
